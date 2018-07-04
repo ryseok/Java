@@ -1,0 +1,67 @@
+
+
+
+<Event처리>
+- Event : 사건 (~했을때)
+  예) Button을 눌렀을때
+    Scrollbar조절바를 움직였을때
+    TextField에 글자를 썼을때
+    Frame우측상단의 X버튼을 클릭했을때
+  
+- 컴포넌트에 사건이 발생했을 때 기능을 부여하는 것.
+
+1. 컴포넌트에 적용할 이벤트를 분석.
+
+2. EventListener(인터페이스) 상속.
+                  ----> implements (구현의 약속)
+
+   ※ 인터페이스 만드는 방법
+  - 분석된 이벤트클래스에서 Event대신 Listener붙임!!
+   
+   예) ActionEvent    -----> ActionListener
+     ItemEvent      -----> ItemListener                 
+     MouseEvent     -----> MouseListener                  
+
+3. 메소드 구현 (이벤트 핸들러).  <==== 기능 정의
+   class A extends Frame implements ActionListener{
+   
+      public void actionPerformed(ActionEvent e){ ==> 이벤트처리부(EventHandler)
+         //코드: 이벤트 발생시(예:버튼 눌림) 실행할 기능 구현!!
+      }   
+   }
+   
+4. 감시자(연결자)메소드 호출 등록.
+   (EventSource와                                        EventHandler를 연결!!)
+       이벤트소스(이벤트 발생시키는 컴포넌트)     이벤트처리부
+    Button                             actionPerformed()메소드
+    TextField
+    List
+    
+     형식)  이벤트소스명.add인터페이스명(이벤트핸들러위치); //----> 연결자 등록
+      
+     위치)  setSize(); setVisible(); 이후에 기술하는 것이 좋다.   
+
+     예)
+      .....
+      setSize(300,300);
+      setVisible(true);
+      bt.addActionListener(this);
+         ==> bt(Button)라는 EventSource와
+             actionPerformed()라는 EventHandler를 연결 시켜주는 역할.
+      
+      
+      
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+

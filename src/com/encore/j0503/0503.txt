@@ -1,0 +1,30 @@
+int su;//속성변수!!
+	         su=100;
+	         
+	         su.~  (X)
+	         
+	     Integer su2;//참조변수!!
+	             su2 = new Integer(100);    
+	  
+	         su2.~  (O)
+	  
+	   -------------JDK5버전 이후-----------------
+	   ===> 오토박싱,언박싱 지원!!
+	   
+	   int su3 = new Integer(200);
+	   
+	   Integer su4 = 200;
+	  
+	  
+	  
+	     ※ Wrapper클래스
+	     
+	        기본자료형               래퍼클래스 
+	      byte      ---> Byte
+	      short     ---> Short
+	      int       ---> Integer   (정수와 관련된 속성,메소드를 감싸는 클래스!!)
+	      long      ---> Long
+	      float     ---> Float
+	      double    ---> Double
+	      char      ---> Character
+	      boolean   ---> Boolean

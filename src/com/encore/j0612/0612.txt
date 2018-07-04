@@ -1,0 +1,41 @@
+<JDBC>  Java DataBase Connectivity  (java.sql패키지)
+
+1. DriverManger
+  - JVM에서 JDBC전체를 관리하는 class
+   (기능: Driver등록, Connection 연결작업...)  
+    
+2. Driver 
+  - DB를 만드는 Vendor(Oracle, MS-SQL, MySQL,....)를 implements하여
+    자신들의 DB를 연결할 수 있는 class를 만드는 인터페이스.   
+     
+3. Connection
+  - DB와 연결성을 가지고 있는 interface.
+4. Statement
+  - 실제 SQL문을 사용하기 위하여 Connection으로 부터 받아내는 interface.
+5. ResultSet
+  - Statement를 통하여 select을 실행하였을때 그 결과 Data를 가지고 있는
+     interface.
+     
+-----------------------------------------------------------------
+<JDBC Programming>
+1. Driver를 loading한다.
+
+2. DB와 연결하여 Connection Object를 얻어낸다.
+
+3. Connection으로 부터 SQL문을 실행하기 위한 Statement Object를 생성.
+
+4. Statement Object의 API이용하여 SQL실행.
+
+5. SQL을 실행한 후 결과인 ResultSet Object를 얻는다.
+
+6. ResultSet Object에 있는 결과 자료를 loop를 이용하여 처리한다.
+
+
+
+
+     
+     
+
+
+   
+      

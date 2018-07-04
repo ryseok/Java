@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>중복아이디검사</title>
+   <script type="text/javascript">
+       //DB ==> 자바스트립트 배열
+       var ids = ['gildong','lime','juwon'];//존재하는(이미등록된) 아이디
+       
+       function id_check(){
+    	/*
+    	1. joinForm의 '중복확인'버튼 클릭시 confirm_id를 새창으로 열기.
+    	
+    	2. confirm_id의 '중복확인'버튼 클릭시
+    	    - frm의 id.value 얻기(현재창의 아이디 얻기)
+    	    - 아이디가 존재한다면
+    	        ---> '이미 사용중인 아이디입니다!!'
+    	        ---> text clear, focus
+    	    - 입력된 아이디가 존재하지 않는다면
+    	        ---> '사용가능한 아이디입니다!!'
+    	        ---> '이 아이디를 사용하시겠습니까?'
+    	        		---> 예 : joinForm에 아이디 전달
+    	        		             현재창 닫기
+    	*/
+    	   var id = document.frm.id.value;
+    	   //var ids = ['gildong','lime','juwon'];
+    	   
+    	   var flag=false;//중복상태 표현
+    	   for(var i=0; i<ids.length; i++){//배열인덱스
+    		  if(ids[i] === id){//중복된 아이디 발견
+    			 flag=true;
+    		     break;
+    		  } 
+    	   }//for     
+    	   
+    	   if(flag){//중복아이디 존재
+    		  alert('이미 사용중인 아이디입니다!!');
+    	      document.frm.id.value='';
+    	      document.frm.id.focus();
+    	   }else{
+    		  alert('사용가능한 아이디입니다!!');
+    		  if(confirm('이 아이디를 사용하시겠습니까?')){
+    			  opener.document.joinForm.id.value= id;
+    			  window.close();
+    		  }
+    	   }
+       }//id_check
+       
+       
+   </script>
+</head>
+<!-- confirm_id.html -->
+<body>
+   <h3>중복아이디 검사</h3>
+   <form name="frm">
+       I  D: <input type="text" name="id" size="15">
+       <button type="button" onclick="id_check()">중복확인</button>
+   </form>
+</body>
+</html>
+
+

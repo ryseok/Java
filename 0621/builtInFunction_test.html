@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>기본함수테스트</title>
+</head>
+<!-- builtInFunction_test.html -->
+<body>
+  <h3>기본함수테스트</h3>
+  <script type="text/javascript">
+    //기본(내장)함수 : 자주 사용되는 함수를 레퍼런스 없이 사용하게 만든 것.
+    var a='100';
+    var b=100;
+    
+    document.write('a+b='+ (a+b));
+    document.write('<br>eval(a)+b='+ (eval(a)+b));
+    //eval("형식을 갖는 문자열") ---> Object반환 (JSON)
+    document.write('<br>parseInt(a)+b='+ (parseInt(a)+b));
+    
+    var c="3.14";
+    var d = 300;
+    document.write('<br>parseInt(c)+d='+ (parseInt(c)+d));
+    document.write('<br>parseFloat(c)+d='+ (parseFloat(c)+d));
+    
+    var e='15a';// e변수의 숫자조합 체크
+               // NaN : Not a Number  
+               // isNaN() : 전체가 숫자조합이 아닌경우 true리턴
+    document.write('<br>isNaN(e) = '+ isNaN(e));
+    
+    //escape('데이터')  ---> 2바이트 문자를 16진수로 변환
+    document.write('<br>escape("a123@")='+escape("a123@"));
+    document.write('<br>escape("홍길동")='+escape("홍길동"));
+    //홍길동 ---> %uD64D%uAE38%uB3D9
+    
+    //unescape('데이터')  ---> 16진수를 문자로 변환
+    document.write('<br>unescape("%uD64D%uAE38%uB3D9")='
+    		     +unescape("%uD64D%uAE38%uB3D9"));
+    
+  </script>
+</body>
+</html>
+

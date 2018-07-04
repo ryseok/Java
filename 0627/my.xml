@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns="http://www.example.org/my_schema" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.example.org/my_schema my_schema.xsd ">
+  <str>str</str>
+  <str>str</str> 
+  <str>str</str> 
+  <str>str</str> 
+  <str>str</str>
+  <su>0</su> 
+  <jumin>960323-2012345</jumin>
+  <cupSize>10</cupSize>
+  <cupSize>50</cupSize>
+  <cupSize>small</cupSize>
+  <cupSize>large</cupSize>
+</root>

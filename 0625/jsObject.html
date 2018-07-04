@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>자바스크립트 객체</title>
+  <script type="text/javascript">
+     function welcome(){
+        document.location='welcome.html'; 
+     }
+     function welcome2(){
+    	location.href='welcome.html'; 
+     }
+     function welcome3(){
+    	location.replace('welcome.html');//되돌아 가기 금지
+     }
+     
+     var flag=true;
+     function changeTitle(){
+        if(flag)document.title='즐거운 월요일~!!';
+        else document.title='자바스크립트 객체';
+        
+        flag = !flag;
+     }
+     
+     document.linkColor='red';
+     document.vlinkColor='orange';
+  </script>
+</head>
+<!-- jsObject.html -->
+<body>
+  <h3>자바스크립트 객체 테스트</h3>
+  <hr>
+  <script type="text/javascript">
+    //스크린(브라우저) 가로길이와 세로길이 구하기
+    document.write('screen.availWidth: '+screen.availWidth);
+    document.write('<br>screen.availHeight: '+screen.availHeight);
+    document.write('<br>screen.width: '+screen.width);
+    document.write('<br>screen.height: '+screen.height);
+    document.write('<br>현재URL정보(location)='+ document.location);    
+  </script>
+  <hr>
+  <h3>페이지 이동</h3>
+  <a href="welcome.html">welcome.html이동</a><br>
+  <form action="welcome.html">
+     <input type="text" value="나길동"><br>
+     <input type="submit" value="페이지이동"><br>
+     <button>페이지이동2</button><br>
+     <button type="button">나버튼</button><br>
+     <input type="reset" value="취소(reset)">
+  </form>
+  <br>
+  <button onclick="welcome()">welcome.html이동</button><br>
+  <button onclick="welcome2()">welcome.html이동2</button><br>
+  <button onclick="welcome3()">welcome.html이동3</button><br>
+  <button onclick="changeTitle()">제목바꿔!!</button><br>
+  
+  
+
+</body>
+</html>
+
+

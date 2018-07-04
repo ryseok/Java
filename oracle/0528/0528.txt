@@ -1,0 +1,336 @@
+
+
+
+
+<오라클 계정>
+1. SYS : 오라클 Super사용자계정이며 
+        데이터베이스에서 발생하는 모든 문제들을 처리 할 수 있는 권한을 가짐.
+        
+   sqlplus /nolog
+   conn /as sysdba
+        
+2. SYSTEM : 오라클 데이터베이스를 유지보수 및 관리할 때 사용하는 계정.
+
+3. SCOTT, HR : 처음 오라클을 사용하는 사용자를 위해 만들어 놓은 사용자 계정
+
+<데이터베이스 접속 툴>
+- 명령어: sqlplus
+   접속연결: 계정명/패스워드
+    sqlplus scott/tiger
+   접속끊기: exit  
+
+- 데이터베이스 접속 상태: SQL>_
+
+<사용자 계정 만들기: 관리자 접속>
+  CREATE USER [user_name]
+  IDENTIFIED BY [password]
+  
+  ----> create user scott
+        identified by tiger;
+         ----> User created.
+
+ - 생성된 계정(User)에 연결 권한 설정하기 (<----관리자가!!)
+   grant connect, resource  to scott;
+     ----> Grant succeeded.(권한 부여 성공)
+     ----> DB관리자가 scott사용자에게 연결과 테이블 생성기능을 부여!!
+
+SQL> conn scott/tiger
+    ----> Connected.
+    ----> exit없이 연결계정 변경
+    
+SQL> show user   ----> 현재 연결된 사용자 확인
+USER is "SCOTT"    
+
+- 현재 연결한 계정에 만들어진 테이블 검색!!
+  select * from tab;
+    ---> no rows selected (검색된 테이블 정보 없음)
+
+<예제테이블 정보 가져오기(복사하기)>
+imp scott/tiger file=c:\jaelee\scottTable.dmp  
+  fromuser=scott touser=scott constraints=y commit=y ignore=y 
+  tables=dept,emp,salgrade
+  
+※주의) SQL>_프롬프트상태에는 SQL관련 명령어만 입력 ===> imp는 sql명령어가 아님
+       C:\Users\Playdata>_프롬프트상태에 imp입력!!
+      반드시 한줄로 입력하고 file뒤에 dmp파일이 실제 존재하는 곳을 명시   
+   
+확인)
+
+C:\oraclexe\app\oracle\product\11.2.0\server\sqlplus\admin\glogin.sql
+----> set linesize 150  
+        ----> 한줄에 표시되는 너비 지정
+
+SQL> select * from tab;
+
+TNAME                                                   
+-----------------------
+DEPT                                                       
+EMP                                                       
+SALGRADE
+
+<DB관련 수업>
+Java - SQL(Structured Query Language) - JDBC  - iBatis(MyBatis)
+
+
+<DB접속>
+ - 접속툴 : 토드,SQL Developer(오라클제공),이클립스,SQL*PLUS
+ - SQL*PLUS 통한 접속
+   1. sqlplus 계정명/패스워드
+   2. sqlplus
+       - Enter user-name : scott
+       - Enter password  : tiger  ====> 보이지 않음
+       
+<접속계정에서의 생성된 테이블 종류 보기>
+SQL> select * from tab; --모든 테이블 종류 보기
+      ----> EMP(사원테이블), DEPT(부서테이블), SALGRADE(급여등급테이블)
+      
+<각 테이블의 구조(컬럼명,자료형) 검색)
+ - DESC[RIBE] 테이블명
+ - 테이블을 구성하는 컬럼과 자료형을 표현.      
+
+SQL> describe emp   ===> (사원테이블)
+
+ Name                               Null?    Type
+ ----------------------------------------------------------------
+ EMPNO    (사원번호)                NOT NULL   NUMBER(4)
+ ENAME    (사원명)                             VARCHAR2(10)
+ JOB      (직책)                               VARCHAR2(9)
+ MGR      (매니저,직속상사)                      NUMBER(4)
+ HIREDATE (고용일,입사일)                        DATE
+ SAL      (급여)                               NUMBER(7,2)
+ COMM     (커미션,특별수당,성과급여)               NUMBER(7,2)
+ DEPTNO   (사원이 속한 부서번호)                   NUMBER(2)      
+      
+SQL> desc dept  ===> (부서테이블)
+
+ Name                Null?               Type
+ ------------------------------------------------------
+ DEPTNO (부서번호)    NOT NULL           NUMBER(2)
+ DNAME  (부서명)                        VARCHAR2(14)
+ LOC    (부서위치)                       VARCHAR2(13)             
+
+SQL> desc salgrade  ===> (급여 등급 테이블)
+
+ Name                Null?    Type
+ --------------------------------------
+ GRADE (등급 1~5)              NUMBER
+ LOSAL (최소급여)              NUMBER
+ HISAL (최대급여)              NUMBER
+
+<테이블에 저장된 데이터에 대한 검색(조회)>
+ ===> select명령문 사용
+   
+   형식) 
+     SELECT (조회하고 싶은)컬럼명
+     FROM   (컬럼이 속한)테이블명;
+     
+     SELECT 컬럼명1,컬럼명2
+     FROM 테이블명;
+     
+ - 부서테이블 조회(모든 속성)
+     select deptno, dname, loc
+     from dept;
+      
+     select *
+     from dept;
+               
+     DEPTNO DNAME                        LOC
+---------- ----------------------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+        
+ - 부서테이블 조회(부서명, 부서위치)
+   select  DNAME, loc
+   from dept;
+
+DNAME                        LOC
+---------------------------- --------------------------
+ACCOUNTING                   NEW YORK
+RESEARCH                     DALLAS
+SALES                        CHICAGO
+OPERATIONS                   BOSTON
+
+===============================================================
+<SQL> Structured Query Language (구조적인 질의어)
+종류) 암기사항
+
+1. 데이터 정의어(DDL): Data Definition Language
+    - 객체(예:table, view, sequence, trigger)에 대한 정의
+    - 데이터베이스 관리자난 응용프로그래머가
+         데이터베이스의 논리적인 구조를 정의하기 위한 언어.
+    - 명령어: CREATE, DROP, ALTER, RENAME, TRUNCATE
+   
+2. 데이터 조작어(DML): Data Manipulation Language ★
+    - 데이터베이스에 저장된 데이터를 조작(추가,삭제,수정)하기 위해 사용하는 언어.
+    - 명령어: INSERT, DELETE, UPDATE
+
+3. 데이터 제어어(DCL): Data Control Language
+    - 데이터베이스에 대한 접근 권한 부여등의 데이터베이스 시스템의 관리를 위한 목적으로 
+           사용되는 언어.
+    - 명령어 : GRANT(권한부여), REVOKE(권한회수)       
+
+4. 데이터 질의어(DQL): Data Query Language ★
+    - 검색,조회 명령어
+    - 명령어 : SELECT
+   
+5. 트랜잭션 제어어(TCL): Transaction Control Language
+    - 논리적인 작업단위의 묶음
+    - 명령어: COMMIT, ROLLBACK, SAVEPOINT
+
+============================================================
+<테이블내의 데이터를 검색>
+   형식)
+     SELECT 컬럼명1, 컬럼명2
+     FROM  (검색하고자 하는 컬럼명이 속한) 테이블명;
+     
+문제1) 급여등급, 최소급여, 최대급여를 검색(조회) 하시오.
+     select grade, losal, hisal 
+     from salgrade;
+
+     GRADE      LOSAL      HISAL
+---------- ---------- ----------
+         1        700       1200 ==> 급여 700이상~1200이하의 급여는 1등급!!
+         2       1201       1400
+         3       1401       2000
+         4       2001       3000
+         5       3001       9999
+
+문제2) 부서명과 부서위치를 출력하시오.
+     select dname, loc
+     from emp;
+     
+---> ORA-00904: "LOC": invalid identifier
+                        ---> 부적절한 식별자 : 존재하지 않는 컬럼  
+
+     select dname, loc
+     from dept;
+
+DNAME                        LOC
+---------------------------- --------------------------
+ACCOUNTING                   NEW YORK
+RESEARCH                     DALLAS
+SALES                        CHICAGO
+OPERATIONS                   BOSTON
+
+
+문제3) 사원번호, 사원명, 입사일, 급여를 (조회)출력하시오.  
+  select empno, ename, hiredate, sal
+  from emp;
+
+     EMPNO ENAME                HIREDATE        SAL
+---------- -------------------- -------- ----------
+      7369 SMITH                80/12/17        800
+      7499 ALLEN                81/02/20       1600
+      7521 WARD                 81/02/22       1250
+      7566 JONES                81/04/02       2975
+      7654 MARTIN               81/09/28       1250
+        
+문제4) "안녕, SQL~!!"을 화면에 출력하시오.
+  ===> SELECT : 컬럼조회와 출력에 사용하는 SQL명령어.
+  
+  <SELECT 문법>
+   SELECT 컬럼명 또는 출력할 데이터
+   FROM 테이블명;
+   
+   SELECT "안녕, SQL~!!";   
+---> ORA-00923: FROM keyword not found where expected
+
+   SELECT "안녕, SQL~!!"
+   FROM  emp;
+---> ORA-00904: "안녕, SQL~!!": invalid identifier
+
+※ 주의) 오라클은 문자, 문자열 데이터를 표현할 때 작은 따옴표를 사용!!
+   SELECT '안녕, SQL~!!'
+   FROM  emp;
+   ===> 안녕, SQL~!! : 14행 출력
+   
+   SELECT '안녕, SQL~!!'
+   FROM  dept;
+   ===> 안녕, SQL~!! : 4행 출력
+
+※오라클에서는 테이블에 상관없는 데이터를 출력하기 위해 시스템 테이블을 지원!! 
+  ===> dual테이블 (dummy테이블, 가상테이블)
+    SELECT '안녕, SQL~!!'
+    FROM dual;
+   ===> 안녕, SQL~!! : 1행 출력
+
+'안녕,SQL~!!'
+----------------------------
+안녕, SQL~!!   
+
+<별칭(alias) 사용하기>
+형식)
+    select 컬럼명 [AS] 별명
+    from 테이블명;
+
+    SELECT '안녕, SQL~!!' as MSG
+    FROM dual;
+    
+    SELECT '안녕, SQL~!!' MSG
+    FROM dual;
+    
+    SELECT '안녕, SQL~!!' "M SG"
+    FROM dual;
+
+MSG
+----------------------------
+안녕, SQL~!!
+
+   
+문제5) 화면에 사원번호와 사원명을 출력하시오.
+(컬럼명 empno----> 사원번호, ename----> 사원명)
+
+  select empno 사원번호, ename 사원명
+  from emp;
+
+      사원번호   사원명
+---------- --------------------
+      7369 SMITH
+      7499 ALLEN
+      7521 WARD
+      7566 JONES
+      7654 MARTIN
+      7698 BLAKE
+      7782 CLARK
+      7788 SCOTT
+
+
+문제6) 각 사원들의 사원번호, 사원명, 급여, 연봉을 출력하시오.
+
+   select empno, ename, sal, sal*12
+   from  emp;
+
+     EMPNO ENAME                       SAL     SAL*12
+---------- -------------------- ---------- ----------
+      7369 SMITH                       800       9600
+      7499 ALLEN                      1600      19200
+      7521 WARD                       1250      15000
+      7566 JONES                      2975      35700
+
+   select empno, ename, sal, sal*12 "연봉"
+   from  emp;
+
+     EMPNO ENAME                       SAL       연봉
+---------- -------------------- ---------- ----------
+      7369 SMITH                       800       9600
+      7499 ALLEN                      1600      19200
+      7521 WARD                       1250      15000
+      7566 JONES                      2975      35700
+      7654 MARTIN                     1250      15000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

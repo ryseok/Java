@@ -1,0 +1,49 @@
+
+
+<<HTML용어 정리>>
+
+1. 태그
+     <텍스트>  ---> 부등호 괄호(<>)안에 텍스트가 들어 갈 때 태그라고 함!!
+
+   종류)
+    - 시작태그(Start Tag)
+      <button>  ==> button시작
+    
+    - 끝태그(End Tag)  
+      </button> ==> button끝
+      
+    - 빈태그(Empty Tag)
+      <hr></hr> ==> <hr/>  수평선 긋기  
+      
+2. 엘리먼트(Element)
+    <table border=1 cellpadding='1' bgcolor="yellow">
+      <tr>
+         <td>홍길동</td><td>길라임</td>
+      </tr>
+    </table>
+    
+    table엘리먼트 : <table>태그가 포함하는 모든 자식요소까지 합친 용어!!
+    table태그       : <table>태그만 표현!!
+    
+3. 속성(Attribute)
+   - 시작태그 또는 빈태그에 위치할 수 있음.
+   - 태그 또는 다른 속성과 공백(WhiteSpace)을 구분자로 식별함!!
+ 
+  ※참고) WhiteSpace : 한개 이상의 연속된 space, tab, enter의 조합.
+      ----> 브라우저에서는 한칸으로 표시(출력)!! 
+
+   형식)
+    <태그명 속성명 =속성값>       ===> 비권장
+    <태그명 속성명 ='속성값'>
+    <태그명 속성명 ="속성값">
+    
+    ---> 작은 따옴표와 큰 따옴표는 전혀 차이가 없음!!
+    
+
+    <table border=1   cellpadding='5'   bgcolor="yellow">
+           
+   ----> border, cellpadding, bgcolor를 속성이라고 함!!
+
+   
+
+

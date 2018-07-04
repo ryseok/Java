@@ -1,0 +1,14 @@
+
+
+
+
+
+
+문제) NameMenu, NameMenuTest클래스를 복사해서
+     NameMenu2, NameMenuTest2클래스를 생성하시오.
+     
+     NameMenuTest2클래스의 main()메소드내에 있는  
+     NameMenu menu = new NameMenu();  ----> NameMenu2 menu = new NameMenu2();
+     
+     NameMenu2클래스의 멤버 String names[]를 Vector<String> names로 변경한 후
+         그에 알맞은 벡터에 대한 추가, 검색, 수정, 삭제하는 코드를 작성하시오.

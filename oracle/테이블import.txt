@@ -1,0 +1,9 @@
+
+
+
+
+
+
+
+
+imp scott/tiger file=c:\jaelee\scottTable.dmp  fromuser=scott touser=scott constraints=y commit=y ignore=y tables=dept,emp,salgrade

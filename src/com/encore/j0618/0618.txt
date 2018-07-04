@@ -1,0 +1,167 @@
+
+
+
+
+
+<JDBC프로그래밍>
+- Java DataBase Connectivity
+    ---> 자바(프로그램)에서 DB를 연결할 수 있는 공통의 인터페이스!!
+
+- 1. Driver loading(제품군 선택)
+     ---> DB회사마다 서로 다른 드라이버를 배포!!
+
+  2. Connection객체 생성
+     ---> 특정 DB(서버) 연결을 위한 정보 설정!!
+            (url[ip:port:sid], user, pwd)
+  
+     Connection conn = DriverManager.getConnection(url,user,password);
+  
+  3. Statement객체 생성 ★ <---- sql문 실행 객체
+  
+     Statement stmt = conn.createStatement();
+     
+              int t = stmt.executeUpdate("sql문(DML)");
+               t ===> 삭제 또는 수정된 행의 갯수. 
+               
+              ResultSet rs = stmt.executeQuery("sql문(DQL)");
+                rs ===> 조회된 행열. 
+               
+         ------ execute(sql)메소드의 역할? ---------------     
+               ===> sql문 실행 요청(sql문을 DB에 전달, 실행요청)
+
+     ===========================================================
+     PreparedStatement pstmt = conn.prepareStatement(sql); //sql문 DB에 미리 전달
+      ===> Statement의 자식 인터페이스!!
+      ===> 사용이유 : 성능상 이득 (동일한 sql문에 데이터만 변경되었을 때 효과)      
+                    SQL Injection과 같은 보안문제를 해결
+           
+          pstmt.set자료형(1, 데이터); //데이터 (따로)설정!!
+                                    ===> 데이터가 sql문으로 변환되는 것을 방지!!
+                    
+       pstmt.execute(); //sql문 실행 요청!!                    
+                    ★주의: execute()메소드에 sql문을 또다시 전달하면 안됨!!
+              pstmt.execute(); (O)       
+              pstmt.execute(sql); (XX)
+     -----------------------------------------------------------  
+       Statement stmt = conn.createStatement();
+       
+        for(10회 반복){
+           su++;
+           stmt.executeUpdate("insert into test values ("+su+")");
+                 ----> sql전달(DB서버에서는 파싱!!),sql실행요청
+                         
+         }
+     -----------------------------------------------------------  
+       PreparedStatement pstmt = conn.prepareStatement
+                               ("insert into test values (?)");
+                          ----> sql전달(DB서버에서는 파싱!!)     
+                                     
+       for(10회 반복){
+           su++;
+           pstmt.setInt(su);
+           pstmt.executeUpdate(); ---> sql문 실행 요청!!
+       } 
+
+  4. ResultSet객체 생성    
+     ResultSet  rs =  pstmt.executeQuery();
+     
+       4_1. rs로 부터 한 개의 행 얻기
+         boolean b = rs.next();
+       
+         if(rs.next()){ //예) select ename from emp where empno=7788;
+                     열데이터 얻기!!
+         }
+         
+         while(rs.next()){//예) select ename from emp where deptno=20;
+                      열데이터 얻기!!
+         }
+       
+       4_2. 행으로 부터 열데이터 얻기
+         rs.get자료형("컬럼명 또는 별명" 또는 인덱스(1~));
+            
+=============================================================================
+ DataBase전담클래스!! ----> DAO
+
+public class Mother{
+   
+   public static Connection getConnection(){
+      return DriverManager.getConnnection(url,user,password);
+   }
+}
+
+
+
+public class DAO extends Thread {
+   Connection conn;
+   PreparedStatement pstmt;
+   ResultSet rs;
+   
+   private void connect(){
+      //conn = getConnection();
+      conn = Mother.getConnection();
+   }
+   private void disconnect(){}
+
+   //DML
+   public boolean insert(빈즈){} 
+   public boolean update(빈즈){} 
+   public String delete(프라이머리키){} 
+   
+   //DQL
+   public 빈즈 select(프라이머리키){}//특정행(유일) 조회  ---> 수정폼
+   public ArrayList<빈즈> selectAll(){}//모든 행 조회
+}
+ 
+==========================================================================
+<기능추가>
+1. 입력폼(JoinForm)을 두번 이상 호출했을 때 
+    이전에 입력된 데이터가 보이지 않게 설정.
+    
+    - initForm()메소드를 추가하여 각 JTextField에 대한 tf.setText("");
+    - new JoinForm() !!
+    
+2. 입력폼(JoinForm)에 '중복확인' 버튼클릭시 입력된 id가 
+    DB에 존재하면 '이미 사용중인 아이디입니다!!'
+    DB에 존재하지않으면 '사용가능한 아이디입니다!!'
+    
+3. 서비스폼에서 '이름검색' ----> '검색' 으로 변경  
+    '검색'버튼 클릭시  
+          [ 아이디, 이름, 주소 ] ---그룹묶어---> 검색된 결과 출력.
+          
+4. [관리자] 로그인 했을때 회원에 대한 삭제 또는 수정 실행 ===> admin/manager
+   [사용자] 로그인 했을때 본인정보에 대한 수정 또는 삭제 실행. 
+   
+     JMenuItem '인증' 클릭시  
+        ----> admin아이디 로그인 상태이면  '인증되었습니다!!'
+        ----> 회원들에 대한 수정 또는 삭제 실행 (수정 또는 삭제할 아이디 묻기)
+   
+        ----> admin아이디가 아니라면(gildong,lime,juwon...)  '관리자 로그인이 필요합니다!!'
+        ----> '관리자로 로그인하시겠습니까?' --->'예' ---> 로그인폼 이동 
+
+     JMenuItem '인증'되지 않은 상태
+        ----> 수정 또는 삭제 버튼 클릭 (수정 또는 삭제할 아이디 묻지 않고 
+                                                           본인에 대한 수정,삭제 처리)
+     
+
+          
+    
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+
+    
+    
+    
+    
+    
+    
+    
+    

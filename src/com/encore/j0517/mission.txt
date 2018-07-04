@@ -1,0 +1,145 @@
+
+
+
+
+
+<PersonMenu를 MVC로 작성하기>
+
+1. 모델 com.encore.person.model
+    - Person.java (자바빈) : 필드(int no, String name, int age, String job)
+    - Model.java (데이터 관련 기능을 정의) : 필드 (Vector<Person> - 데이터 저장소)
+        ==> 메소드 : 추가 insert, 삭제 delete, 수정 update,  조회 select
+        
+2. 뷰 com.encore.person.view
+    - MainView.java  (시작 뷰, JTable을 통해 사람정보 출력)
+            필드 : JTable table
+            JButton bt_insert, bt_del, bt_update, bt_exit
+            
+    - InputForm.java (사람정보 입력) - 타이틀: 입력폼
+            필드 : JTextField tf_name, tf_age, tf_job
+            JButton bt_submit, bt_cancel
+                   bt_submit의 text - 입력
+            
+    - UpForm.java (사람정보 수정) - 타이틀: 수정폼       
+            필드 : InputForm.java와 동일
+            bt_submit의 text - 수정     
+                        
+3. 컨트롤러 com.encore.person.control
+    - Controller.java (전체 프로그램에 대한 흐름제어!!, main()포함)
+
+=====================================================================
+<작업순서>
+1. 뷰작성 (MainView, InputForm, UpForm)
+   - 각각 원하는 모양,디자인이 나왔는지 확인
+   
+   
+2. 모델작성 (Person, Model)
+   - InputForm을 통해 입력받은 데이터(이름,나이,직업)를 저장할 수 있는 자바빈즈 작성.
+     ---> Person클래스
+                   필드: String name, int age, String job 을 private하게 설정   
+               int no 추가 (서로 다른 사람의 정보를 구분(유일한 데이터 값!!)하기 위한 필드)
+          ctrl+space를 통해 기본 생성자 추가
+          alt+shift+s ---> Source메뉴 ---> 오버로딩 생성자 create!!          
+          alt+shift+s ---> Source메뉴 ---> 세터메소드,게터메소드 create!!
+          
+          옵션) 각 Person의 정보를 쉽게 알기 위해 toString() 오버라이딩!!
+          alt+shift+s ---> Source메뉴 ---> toString() create!!
+          
+          클래스  indent(들여쓰기) 주기  단축키 : ctrl+shift+f
+          
+   - 서로 다른 사람정보(Person)를 데이터 저장소(Vector)에 저장,조회,수정,삭제할수 있는 클래스 작성.
+     ---> Model클래스
+                    필드: Vector<Person> v;  Vector<Person> persons;
+                Vector<Person> personV;
+                
+          Model내의 메소드는 Controller(모델과 다른패키지)에서 호출되어질 것이므로 public하게 작성.
+                    메소드: public void insert(){} : 한개의 Person을 Vector에 저장                
+                 public void update(){}  : Vector내의 한개의 Person을 수정 
+                 public void delete(){}  : Vector내의 한개의 Person을 삭제
+                 public void select(){}  : Vector내의 한개의(특정) Person을 조회
+                 public void selectAll(){} : Vector내의 모든 Person을 조회
+                 
+          ---->  메소드의 리턴형과 매개변수에 대한 고민!!
+                insert()                
+                update() 
+                delete()
+                select()
+                selectAll()
+                
+          ----> 변경된 메소드      
+                public void insert(Person p){}                
+                public void update(Person p){} 
+                public void delete(int no){}
+                public Person select(int no){} --> 수정폼을 위해 작성
+                public Vector<Person> selectAll(){} --> JTable에 출력될 모든 사람 정보
+                 
+3. 컨트롤러 작성 
+  - main() 추가
+  - main()내에서 자신의 생성자 호출.
+  - 컨트롤러는 전체 클래스에 대한 제어를 해야 하므로 생성된 전체 뷰를 등록
+     ==> 멤버에 뷰클래스 선언
+     ==> 생성자에서 뷰클래스 객체 생성
+            ==> 각 뷰클래스(MainView,InputForm,UpForm)내의 main메소드 삭제
+                (6개의 클래스중 main()메소드는 한개 필요)
+                             ==> main()이 한 개의 응용프로그램을 표현하기 때문!!(JavaApplication)
+            ==> 3개의 뷰가 동시에 나타나기 때문에 
+                InputForm과 UpForm에 있는 setVisible(true); 를 삭제해서 
+                MainView만 보이게 설정함. 
+                                                                    
+  - 각 뷰의 요청 컴포넌트를 체크하기 위해 Listener설정
+     ==> ActionListener (bt_insert, bt_del, bt_update, bt_exit,bt_submit, bt_cancel)
+     ==> 이벤트핸들러 public void actionPerformed(ActionEvent e){} 추가
+     ==> MainView,InputForm,UpForm내의 요청 컴포넌트(<== 이벤트소스)와 이벤트핸들러 연결!!
+     ==> 이벤트핸들러 내에서 요청컴포넌트(JButton) 구분 : if~else if
+
+================================================================================
+     
+  - MainView : bt_insert
+     ==> 화면(프레임)이동  :   MainView ---> InputForm
+  - InputForm : bt_submit
+     ==> 1. 화면에 입력된 데이터 얻기
+         2. Person으로 묶어주기
+         3. 모델의 insert()에게 전달  : Vector에 Person정보 추가
+         4. 모델의 selectAll()을 통해 Vector정보를 Main뷰(JTable)에게 전달
+              ---> Main뷰에는 전달받은 데이터를 JTable에 출력하는 메소드가 필요!!
+         5. 화면 이동 : InputForm ---> MainView                 
+                
+   - MainView : bt_update
+     ==> JTable에 선택된 행의 번호 얻어오기
+     ==> 번호에 해당하는 Person정보를 모델 select()통해 얻기
+     ==> Person정보를 UpForm에 출력하기
+     ==> 화면(프레임)이동  :   MainView ---> UpForm
+    
+   - UpForm : bt_submit
+     ==> 1. 수정폼에 입력된 수정정보(age,job) 얻기  
+         2. age,job을 한개의 변수명 p로 정의
+              ---> Person기본생성자 사용   (no=0,name=null,age=0,job=null)
+              ---> set메소드 통한 초기화
+                       setAge(age);   (no=0,name=null,age=14,job=null)
+                       setJob(job);   (no=0,name=null,age=14,job="중학생")
+                       setNo(no);     (no=3,name=null,age=14,job="중학생")
+                       
+         3. 모델 update()에 전달                       
+              ---> Vector에 일치하는 번호를 찾아 age와 job을 변경!!              
+              oldp.setAge(newp.getAge());
+              
+         4. 갱신(수정)된 Vector정보를 다시 호출  ---> 메인뷰에게 전달
+         5. 페이지 이동(수정폼 ---> 메인뷰)          
+
+    - MainView : bt_del
+      ==> 1. JOptionPane의 InputDialog를 통해 '삭제할 번호:'를 입력
+          2. 모델 delete()에 삭제할 번호 전달
+              ---> Vector에 일치하는 번호를 찾아 해당 Person삭제!!
+          3. 갱신(수정)된 Vector정보를 다시 호출 ---> 메인뷰에게 전달
+           
+
+                      
+               
+
+
+
+
+
+
+
+                    

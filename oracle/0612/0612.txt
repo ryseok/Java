@@ -1,0 +1,209 @@
+<테이블 만들기>
+1. 상품테이블
+  drop table 상품;
+  create table 상품
+  (
+        상품코드 char(4) constraint 상품_pk primary key,
+        상품명 varchar2(15) not null,
+        제조사 varchar2(15),
+        소비자가격 number,
+        재고수량 number default 0 );
+
+2. 입고테이블
+  drop table 입고;
+  create table 입고
+  (
+      입고번호 number primary key,
+      상품코드 char(4) references 상품(상품코드),
+      입고일자 date,
+      입고수량 number,
+      입고단가 number,
+      입고금액 number);
+      
+  drop sequence 입고_seq;
+  create sequence 입고_seq
+                start with 1
+                increment by 1
+                nocycle
+                nocache;
+                
+<상품테이블에 정보입력>
+ - 상품코드,상품명,제조사,소비자가격,재고수량 
+ 
+ insert into 상품   (상품코드,상품명,제조사,소비자가격)
+           values ('a001', '마우스', '삼송', 1000);
+           
+ insert into 상품   (상품코드,상품명,제조사,소비자가격)
+           values ('a002', '키보드', 'LC', 2000);
+           
+ insert into 상품   (상품코드,상품명,제조사,소비자가격)
+           values ('a003', '모니터', '샤오미', 5000);
+           
+SQL> select * from 상품;
+
+상품코드      상품명                    제조사        소비자가격   재고수량
+-------- ------------------------------ ------------
+a001     마우스                         삼송         1000       0
+a002     키보드                         LC      2000       0
+a003     모니터                         샤오미       5000       0                          
+                
+1. 입력트리거 (입고테이블에 상품이 입력되었을 때 재고수량 증가!!)
+  예) 입고테이블에 키보드가 10개 입고 되었을 때
+     자동으로 상품테이블의 'a002' 상품의 재고가 0 ----> 10으로 변경!! 
+
+  create or replace trigger product_insert
+  after insert on 입고 -- 입고 테이블에서 입력이 발생했다면 ~  발생 후 begin~end를 실행해라!!
+  for each row
+  begin
+    -- 상품테이블에 대한 [재고수량]수정
+    update 상품 set 재고수량= 재고수량 + :new.입고수량 --10
+    where 상품코드= :new.상품코드; --'a002';
+  end;
+  /
+
+SQL> select 상품코드, 상품명, 재고수량 from  상품;
+
+상품코드 상품명                           재고수량
+-------- ------------------------------ 
+a001     마우스                                  0
+a002     키보드                                  0
+a003     모니터                                  0                
+
+--입고테이블) 입고번호, 상품코드, 입고일자, 입고수량, 입고단가, 입고금액
+insert into 입고 values (입고_seq.nextval, 'a002', sysdate, 10, 1000, 10000);
+
+SQL> select 상품코드, 상품명, 재고수량 from  상품;
+
+상품코드 상품명                           재고수량
+-------- ------------------------------ 
+a001     마우스                                  0
+a002     키보드                                 10
+a003     모니터                                  0                
+
+insert into 입고 values (입고_seq.nextval, 'a002', sysdate, 20, 1000, 20000);
+insert into 입고 values (입고_seq.nextval, 'a002', sysdate, 10, 1000, 10000);
+
+SQL> select 상품코드, 상품명, 재고수량 from  상품;
+
+상품코드 상품명                           재고수량
+-------- ------------------------------ ----------
+a001     마우스                                  0
+a002     키보드                                 40
+a003     모니터                                  0      
+      
+2. 수정트리거 (입고테이블에 상품의 입고 수량이 변경되었을때 상품테이블의 재고수량 변경)
+  --> product_update
+  --> 예) 종업원의 실수로 잘못입력된
+             입고번호 3에 대해 입고수량 10 ------> 20 으로 변경시
+       
+       해당 상품코드에 대한 재고 수량이 40 -----> 50 으로 변경!!
+             
+  [입고]테이블의 입고 수량 변경  --------> [상품]테이블의 재고수량 변경
+  
+  create or replace trigger product_update
+  after update on 입고-- 입고테이블에서 수정이 발생했을때 [이벤트!!]
+  for each row
+  begin
+    update 상품 set 재고수량 =  재고수량       - :old.입고수량       + :new.입고수량
+                       --    40(기존재고) - 10(잘못된입고) + 20(새입고)     -- 40 + (20-10)  ==>  50
+    where 상품코드 =  :old.상품코드 ; --'a002'; 
+  end;
+  /
+ 
+ <상황발생> 
+ update 입고 set 입고수량=20
+         where 입고번호=3; 
+  
+SQL> select 상품코드, 상품명, 재고수량 from  상품;
+
+상품코드 상품명                           재고수량
+-------- -----------------------------
+a001     마우스                                  0
+a002     키보드                                 50
+a003     모니터                                  0  
+  
+----------------------------------------------------------
+SQL> select 입고번호,상품코드,입고수량 from 입고;
+
+        입고번호 상품코드   입고수량
+---------- -------- ----------
+         1 a002             10
+         2 a002             20
+         3 a002             20  
+  
+3. 삭제트리거
+  ----> 입고번호 2에 대한 삭제!!
+        (다른 대리점에 전달되어야 하는 제품이 잘못 배달 되었음)
+  ----> [상품]테이블 재고수량 50 ---> 30 변경
+  
+  create or replace trigger product_delete
+  after delete on 입고 -- 이벤트: 입고테이블에서 삭제 발생시      
+  for each row
+  begin
+     -- 입고테이블 삭제 발생시 실행할 SQL
+     update 상품 set 재고수량 = 재고수량 - :old.입고수량 
+                           -- 50   - 20  ==> 30;
+     where 상품코드 = :old.상품코드;                           
+  end;
+  /
+   
+  delete from 입고 where 입고번호=2;    
+      
+SQL> select 입고번호,상품코드,입고수량 from 입고;
+
+  입고번호 상품코드   입고수량
+---------- -------- ----------
+         1 a002             10
+         3 a002             20
+
+SQL> select 상품코드, 상품명, 재고수량 from  상품;
+
+상품코드 상품명                           재고수량
+-------- ------------------------------ ----------
+a001     마우스                                  0
+a002     키보드                                 30
+a003     모니터                                  0   
+
+==========================================================================
+
+<JDBC>  Java DataBase Connectivity  (java.sql패키지)
+
+1. DriverManger
+  - JVM에서 JDBC전체를 관리하는 class
+   (기능: Driver등록, Connection 연결작업...)  
+    
+2. Driver 
+  - DB를 만드는 Vendor(Oracle, MS-SQL, MySQL,....)를 implements하여
+    자신들의 DB를 연결할 수 있는 class를 만드는 인터페이스.   
+     
+3. Connection
+  - DB와 연결성을 가지고 있는 interface.
+4. Statement
+  - 실제 SQL문을 사용하기 위하여 Connection으로 부터 받아내는 interface.
+5. ResultSet
+  - Statement를 통하여 select을 실행하였을때 그 결과 Data를 가지고 있는
+     interface.
+     
+-----------------------------------------------------------------
+<JDBC Programming>
+1. Driver를 loading한다.
+
+2. DB와 연결하여 Connection Object를 얻어낸다.
+
+3. Connection으로 부터 SQL문을 실행하기 위한 Statement Object를 생성.
+
+4. Statement Object의 API이용하여 SQL실행.
+
+5. SQL을 실행한 후 결과인 ResultSet Object를 얻는다.
+
+6. ResultSet Object에 있는 결과 자료를 loop를 이용하여 처리한다.
+
+
+
+
+     
+     
+
+
+   
+      

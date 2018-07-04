@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>함수호출테스트</title>
+   <script type="text/javascript">
+      function gildong(){
+    	  alert('길동~!!');
+      }
+   </script>
+   
+   <script type="text/javascript">
+       function juwon(){
+    	   alert("우리주원~!!");
+    	   alert('su1='+su1 +'\nsu2='+su2);//su1,su2 (전역변수)
+    	   
+    	   alert('su3='+su3);//su3 ---> lime()함수의 변수  : 전역변수
+    //주의) lime()함수를 먼저 호출하지 않으면  'su3=33;'이 실행되지 않으므로 에러가 발생할 수 있음!! 
+    			                 
+         //alert('su4='+su4);//var su4 ---> lime()함수의 지역변수 : 참조불가이므로 에러!!
+       }
+   </script>
+   <!-- 외부에 있는 자바스크립트 파일을 참조(src속성을 통해)해서 마치 현재 문서에 있는 것처럼 동작
+           ※주의) src속성을 사용하는 경우 ==> ONLY 외부 파일 참조 전용!!
+                             ==> script태그 내부에 정의되는 코드들은 무시!! 
+    -->
+   <script type="text/javascript" src="myfun.js">
+       function juwon(){
+    	   alert('너주원~!!');
+       }
+   </script>
+   
+</head>
+<!-- fun_test2.html -->
+<body>
+  <h3>함수호출 테스트</h3>
+  <input type="button" value="길동호출" onclick="gildong()"><br>  
+  <button onclick="gildong()">길동호출2</button><br>
+  <a href="javascript:gildong()">길동호출3</a><br>
+  <button onclick="lime()">라임호출</button><br>
+  <button onclick="juwon()">주원호출</button>
+</body>
+</html>
+
+

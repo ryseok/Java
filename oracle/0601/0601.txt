@@ -1,0 +1,820 @@
+
+
+<DQL>
+ - 형식)
+ 
+   1.select distinct 컬럼명1 as 별명,컬럼명2 별명, 데이터, 함수호출(숫자,문자,날짜,nvl,형변환)
+   2.from 테이블명1 별명, 테이블명2, 서브쿼리, (select * from emp) emp2
+   3.where [not] 조건식  [논리연산자OR AND]  조건식
+             ==> 컬럼명 연산자 데이터
+                                          비교
+                      [not] in (1,2,3,4)
+                      [not] like '패턴%_데이터'
+                      [not] between 최소값 and 최대값
+                       is [not] null                                          
+             
+   4.group by 컬럼명
+   5.having 조건식
+   6.order by 컬럼명 [asc|desc];
+   
+   실행순서) 2-3-4-5-1-6
+   실행순서) 2-3-4-5-1(조회)-6-1(출력)
+
+<그룹함수> = 집계함수
+ - sum min max count avg
+ - 결과 행의 갯수!! ----> 한 행
+ - 사용 : select 그룹함수()
+ - 주의1 : select 그룹함수(), 컬럼명   ----------> 무조건 에러!!
+ 
+     ----> 해결) select 그룹함수(), 컬럼명A
+                ....
+                ....
+                group by 컬럼명A
+                
+ - 주의2 : where   ----> (전체행에 대한)조건절
+          having  ----> (그룹에 대한)조건절                  
+
+          having avg(sal) > 2000   (O)
+          where  avg(sal) > 2000   (X) : where 절에는 그룹함수를 직접 사용X
+       ----> 해결)
+          where  (select avg(sal) from emp) > 2000  
+
+=======================================================================
+<조인> JOIN
+ - from 뒤에 두개 이상의 테이블을 명시(참조).
+   예) from emp,dept
+   
+ - 종류) cross, equi, non-equi, self, outer   
+   <CROSS JOIN> : 특별한 조건없이 두 테이블을 곱의 형태로 출력.
+   
+   select *
+   from emp,dept;   ----> emp 14행  * dept 4행  : 56행
+   
+   <EQUI JOIN> : 조인 대상이 되는 두 테이블에서 공통적으로 존재하는 컬럼의 값이 
+              일치하는 행을 연결하여 결과를 생성하는 조인.
+              
+   from emp,dept
+   where emp.deptno = dept.deptno
+   
+   <Non-Equi JOIN> : 특정 범위내에 있는 값을 조회하기 위해 비교연산자를 사용.           
+   
+   from emp, salgrade
+   where emp.sal between salgrade.losal and salgrade.hisal       
+              
+<Self JOIN>              
+- 마치 같은 테이블이 두개인 것처럼 자기 자신테이블과 조인하는 것.              
+              
+문제) SCOTT사원의 사원번호, 사원명, 급여, 직속 상사명을 출력하시오!!   
+   
+   select e1.empno, e1.ename 사원명, e1.sal, e2.ename 직속상사명
+   from emp e1, emp e2
+   where  e1.ename = 'SCOTT'   AND     e1.mgr = e2.empno;
+
+     EMPNO 사원명                                         SAL 직속상사명
+---------- -------------------- ---------- --------------------
+      7788 SCOTT                      3000 JONES
+
+문제) SCOTT사원과 동일한 근무지(부서)에서 근무하는 사원(동료사원)의 이름을 출력하시오.                                                                             
+
+    select e1.ename 기준사원명, e2.ename 동료사원명
+    from  emp e1, emp e2  -- e1: 기준사원(SCOTT)   , e2: 동료사원
+    where  e1.deptno  = e2.deptno;
+    ===> 70행
+          ===> 10번부서: 3   , 20번부서: 5,    30번부서:6
+                      9    +          25 +      36
+                      
+    select e1.ename 기준사원명, e2.ename 동료사원명
+    from  emp e1, emp e2  -- e1: 기준사원(SCOTT)   , e2: 동료사원
+    where  e1.ename ='SCOTT'    
+           AND  e1.deptno  = e2.deptno;                  
+          
+기준사원명                       동료사원명
+-------------------- --------------------
+SCOTT                SMITH
+SCOTT                JONES
+SCOTT                SCOTT
+SCOTT                ADAMS
+SCOTT                FORD
+
+    select e1.ename 기준사원명, e2.ename 동료사원명
+    from  emp e1, emp e2  -- e1: 기준사원(SCOTT)   , e2: 동료사원
+    where  e2.ename <> 'SCOTT'
+           AND e1.ename ='SCOTT'    
+           AND  e1.deptno  = e2.deptno;    
+
+기준사원명                      동료사원명
+-------------------- --------------------
+SCOTT                SMITH
+SCOTT                JONES
+SCOTT                ADAMS
+SCOTT                FORD   
+   
+<Outer JOIN>
+- 테이블 조인 중 한쪽 테이블에 존재하지 않는 데이터로 인해서
+  출력되지 않는 행을 출력하고 싶을 때 사용.
+- '(+)' 기호 사용 
+
+문제) 각 사원의 이름과 그 사원의 직속 상사이름을 출력하시오.
+   select  e1.ename 사원명,  e2.ename 직속상사명
+   from emp e1, emp e2
+   where e1.mgr = e2.empno;
+   ===> 13행 출력 (전체 사원수는 14명!! ----> e1.mgr이 null인 KING사원의 배제)
+   
+   select  e1.ename 사원명,  e2.ename 직속상사명
+   from emp e1, emp e2
+   where e1.mgr = e2.empno(+);
+   ---> 14행 출력
+   ---> null값이 없는 e2쪽에 (+)를 추가
+
+사원명               직속상사명
+-------------------- --------------------
+FORD                 JONES
+SCOTT                JONES
+JAMES                BLAKE
+TURNER               BLAKE
+MARTIN               BLAKE
+WARD                 BLAKE
+ALLEN                BLAKE
+MILLER               CLARK
+ADAMS                SCOTT
+CLARK                KING
+BLAKE                KING
+JONES                KING
+SMITH                FORD
+KING
+
+문제) 각 사원의 이름과 부서번호, 부서명, 부서위치를 출력하시오.
+   select ename, dept.deptno, dname, loc
+   from emp, dept
+   where emp.deptno = dept.deptno;
+   ----> 14행 출력
+   
+   ----> 사원에 매핑되지 않은 부서정보(40번부서)도 함께 출력하고 싶다!!
+   select ename, dept.deptno, dname, loc
+   from emp, dept
+   where emp.deptno(+) = dept.deptno;
+            10             10
+            20             20
+            30             30
+                           40
+
+ENAME                    DEPTNO DNAME                        LOC
+-------------------- ---------- ---------------------------- --------------------------
+CLARK                        10 ACCOUNTING                   NEW YORK
+KING                         10 ACCOUNTING                   NEW YORK
+MILLER                       10 ACCOUNTING                   NEW YORK
+JONES                        20 RESEARCH                     DALLAS
+FORD                         20 RESEARCH                     DALLAS
+ADAMS                        20 RESEARCH                     DALLAS
+SMITH                        20 RESEARCH                     DALLAS
+SCOTT                        20 RESEARCH                     DALLAS
+WARD                         30 SALES                        CHICAGO
+TURNER                       30 SALES                        CHICAGO
+ALLEN                        30 SALES                        CHICAGO
+
+ENAME                    DEPTNO DNAME                        LOC
+-------------------- ---------- ---------------------------- --------------------------
+JAMES                        30 SALES                        CHICAGO
+BLAKE                        30 SALES                        CHICAGO
+MARTIN                       30 SALES                        CHICAGO
+                             40 OPERATIONS                   BOSTON
+                             
+
+========================= JOIN 문제 =====================================
+문제1) 사원들의 이름, 부서번호, 부서이름을 출력.
+   select  ename, e.deptno, dname
+   from emp e, dept d
+   where e.deptno = d.deptno;
+
+ENAME                    DEPTNO DNAME
+-------------------- ---------- ----------------------------
+CLARK                        10 ACCOUNTING
+KING                         10 ACCOUNTING
+MILLER                       10 ACCOUNTING
+JONES                        20 RESEARCH
+FORD                         20 RESEARCH
+ADAMS                        20 RESEARCH
+SMITH                        20 RESEARCH
+SCOTT                        20 RESEARCH
+WARD                         30 SALES
+TURNER                       30 SALES
+ALLEN                        30 SALES
+
+문제2) 부서번호가 30번인 사원들의 이름, 직급, 부서번호, 부서위치를 출력.
+  select ename, job, d.deptno, loc
+  from emp e, dept d
+  where   e.deptno = 30 
+          and e.deptno = d.deptno;
+
+ENAME                JOB                    DEPTNO LOC
+-------------------- ------------------ ---------- --------------------------
+ALLEN                SALESMAN                   30 CHICAGO
+WARD                 SALESMAN                   30 CHICAGO
+MARTIN               SALESMAN                   30 CHICAGO
+BLAKE                MANAGER                    30 CHICAGO
+TURNER               SALESMAN                   30 CHICAGO
+JAMES                CLERK                      30 CHICAGO
+
+문제3) 커미션을 받는 사원의 이름, 커미션, 부서이름, 부서위치 출력(커미션 0은 제외)                           
+  select ename, comm,           dname, loc
+  from      emp e,                 dept d
+  where    comm != 0                 -- 4 ===> 3
+           and
+           comm is not null          -- 14 ===> 4
+           and 
+           e.deptno =  d.deptno;     -- (14*4=56)  ===> 14
+
+ENAME                      COMM DNAME                        LOC
+-------------------- ---------- ---------------------------- ------- 
+ALLEN                       300 SALES                        CHICAGO
+WARD                        500 SALES                        CHICAGO
+MARTIN                     1400 SALES                        CHICAGO
+
+                             
+문제4) DALLAS에서 근무하는 사원들의 이름, 직급, 부서번호, 부서이름을 출력.
+  select ename, job, e.deptno, dname
+  from   emp e, dept d
+  where  loc='DALLAS' 
+         and  e.deptno = d.deptno;
+
+ENAME                JOB                    DEPTNO DNAME
+-------------------- ------------------ ---------- ----------------------------
+JONES                MANAGER                    20 RESEARCH
+FORD                 ANALYST                    20 RESEARCH
+ADAMS                CLERK                      20 RESEARCH
+SMITH                CLERK                      20 RESEARCH
+SCOTT                ANALYST                    20 RESEARCH
+
+
+문제5) 사원이름에 'A'가 들어가는 사원들의 이름과 부서이름을 출력.
+   select ename, dname
+   from   emp e, dept d
+   where  ename like '%A%'
+          and
+          e.deptno = d.deptno;
+
+ENAME                DNAME
+-------------------- ----------------------------
+ALLEN                SALES
+WARD                 SALES
+MARTIN               SALES
+BLAKE                SALES
+CLARK                ACCOUNTING
+ADAMS                RESEARCH
+JAMES                SALES
+
+문제6) 사원이름과 직급, 급여, 급여등급을 출력
+  select ename, job, sal, grade
+  from   emp e,  salgrade s
+  where  e.sal between s.losal and s.hisal;
+
+ENAME                JOB                       SAL      GRADE
+-------------------- ------------------ ---------- ----------
+SMITH                CLERK                     800          1
+JAMES                CLERK                     950          1
+ADAMS                CLERK                    1100          1
+WARD                 SALESMAN                 1250          2
+MARTIN               SALESMAN                 1250          2
+MILLER               CLERK                    1300          2
+TURNER               SALESMAN                 1500          3
+ALLEN                SALESMAN                 1600          3
+CLARK                MANAGER                  2450          4
+BLAKE                MANAGER                  2850          4
+JONES                MANAGER                  2975          4
+SCOTT                ANALYST                  3000          4
+FORD                 ANALYST                  3000          4
+KING                 PRESIDENT                5000          5
+
+
+문제7) 사원들의 이름과 그 사원과 같은 부서에 근무하는 사원의 사원명, 부서번호를 출력.
+        ===> 자기 이름을 제외한 동료 56행 출력!!                                
+   select my.ename 자신, co.ename 동료, my.deptno
+   from  emp  my, emp co
+   where  my.empno != co.empno
+   and  my.deptno  =  co.deptno
+   order by my.ename;
+
+=========================================================================   
+<ANSI Cross Join> 표준 조인 (9i부터)
+
+from 테이블명1, 테이블명2
+ ----> 콤마 제거!!  
+   
+select empno, ename, dname
+from emp,   dept;
+---> 14행   * 4행     : 56행
+
+select empno, ename, dname
+from emp   cross join   dept;
+---> 56행
+
+<ANSI Inner Join>
+- 테이블 사이에 inner join사용
+    동등 조건식은 ON(조건절!!) 뒤에 사용
+- where절을 추가하는 것이 가능
+- on절은 반드시 추가!!
+- on절에 동등비교와 추가적인 조건식을 기술 가능.
+
+문제) 전체 사원에 대한 사원번호, 사원명, 부서명을 출력.
+  select empno, ename, dname
+  from emp inner join dept;
+  ---> ORA-00905: missing keyword (on조건절을 명시!!)
+
+  select empno, ename, dname
+  from emp inner join dept
+  on emp.deptno = dept.deptno;
+
+     EMPNO ENAME                DNAME
+---------- -------------------- ----------------------------
+      7782 CLARK                ACCOUNTING
+      7839 KING                 ACCOUNTING
+      7934 MILLER               ACCOUNTING
+      7566 JONES                RESEARCH
+      7902 FORD                 RESEARCH
+      7876 ADAMS                RESEARCH
+      7369 SMITH                RESEARCH
+      7788 SCOTT                RESEARCH
+      7521 WARD                 SALES
+      7844 TURNER               SALES
+      7499 ALLEN                SALES
+    
+문제) 'JAMES'사원에 대한 사원번호, 사원명, 부서명을 출력하시오.
+  select empno, ename, dname
+  from emp inner join dept
+  on emp.deptno = dept.deptno -- 공통 컬럼 매핑
+  where ename='JAMES';
+
+     EMPNO ENAME                DNAME
+---------- -------------------- ----------------------------
+      7900 JAMES                SALES
+
+  select empno, ename, dname
+  from emp inner join dept
+  on emp.deptno = dept.deptno -- 공통 컬럼 매핑
+     and ename='JAMES';
+
+     EMPNO ENAME                DNAME
+---------- -------------------- ----------------------------
+      7900 JAMES                SALES
+
+<Inner Join에 USING절 사용하기>
+ ---> 형식)  USING (공통컬럼명)
+
+  select empno, ename, dname
+  from emp inner join dept
+  USING (deptno);
+  ===> 14행 출력
+  
+  select empno, ename, dname
+  from emp inner join dept
+  using (deptno) -- 공통 컬럼 매핑
+  where ename='JAMES';
+
+     EMPNO ENAME                DNAME
+---------- -------------------- ----------------------------
+      7900 JAMES                SALES
+
+<Natural Join>
+  select empno, ename, dname
+  from emp natural join dept;
+  ===> 14행
+  
+문제) ADAMS의 사원번호, 사원명, 부서명을 출력.  
+  select empno, ename, dname
+  from emp natural join dept
+  where ename='ADAMS';
+  
+     EMPNO ENAME                DNAME
+---------- -------------------- ----------------------------
+      7876 ADAMS                RESEARCH
+      
+<ANSI Outer Join>
+   형식) 
+        from 테이블명1  (LEFT | RIGHT | FULL) [OUTER] JOIN  테이블명2
+        ---> 조건절은 ON !!
+        
+문제) 각 사원의 이름과 그 사원의 직속 상사이름을 출력하시오.
+  select e1.ename 사원명, e2.ename 직속상사명
+  from emp e1  left join  emp e2
+  on e1.mgr = e2.empno;
+
+문제) 각 사원의 이름과 부서번호, 부서명, 부서위치를 출력하시오. (40번 부서에 대해서 출력)       
+  select ename , dept.deptno, dname, loc
+  from   emp  right   outer join   dept
+  on   emp.deptno = dept.deptno;
+  
+  select ename , deptno, dname, loc
+  from   emp  right outer join   dept
+  using (deptno);
+
+===============================================================================
+<서브쿼리> ★★ sub query
+ - 특정 테이블에서 검새된 결과를 다른 테이블에 전달하여 새로운 결과를 검색 할 때 사용.
+
+문제) JAMES 사원이 근무하는 부서이름을 출력.
+  1.  select deptno
+      from emp
+      where ename='JAMES';
+      ----> 30번 부서 근무!!
+  
+  2.  select dname
+      from dept
+      where deptno=30;    
+      ----> 부서명 SALES !!
+      
+      
+      select dname                  --------------> 메인 쿼리(주 쿼리)
+      from dept
+      where deptno = (select deptno --------------> 서브 쿼리!!
+                     from emp
+                     where ename='JAMES');
+      
+DNAME
+----------------------------
+SALES
+
+문제) FORD사원과 동일한 직책을 가진 사원에 대해 사원번호, 사원명, 급여, 직책을 출력.
+      
+    select empno, ename, sal, job
+    from emp
+    where job='ANALYST';  
+      
+    select job
+    from emp
+    where ename='FORD';  
+    ====> ANALYST  
+      
+    select empno, ename, sal, job
+    from emp
+    where job=(select job
+               from emp
+               where ename='FORD');
+    
+    
+      
+     EMPNO ENAME                       SAL JOB
+---------- -------------------- ---------- ------------------
+      7788 SCOTT                      3000 ANALYST
+      7902 FORD                       3000 ANALYST      
+
+    select empno, ename, sal, job
+    from emp
+    where  ename != 'FORD'
+              and
+           job=(select job
+               from emp
+               where ename='FORD');
+
+     EMPNO ENAME                       SAL JOB
+---------- -------------------- ---------- ------------------
+      7788 SCOTT                      3000 ANALYST
+
+문제) MARTIN사원의 급여와 동일하거나 더 많이 받는 사원의 사원명, 급여를 출력.
+     ----> 1250
+
+     select ename, sal
+     from emp
+     where sal>=1400;
+     
+     select ename, sal
+     from emp
+     where  ename <> 'MARTIN'
+             and    
+            sal>=(select sal
+                 from emp
+                 where ename='MARTIN');
+     
+ENAME                       SAL
+-------------------- ----------
+ALLEN                      1600
+WARD                       1250
+JONES                      2975
+BLAKE                      2850
+CLARK                      2450
+SCOTT                      3000
+KING                       5000
+TURNER                     1500
+FORD                       3000
+MILLER                     1300   
+
+
+문제) DALLAS에서 근무하는 사원의 이름, 부서번호를 출력.
+     ----> 20
+     
+     select ename, deptno
+     from emp
+     where deptno=20;
+     
+     select ename, deptno
+     from emp
+     where deptno=(select deptno
+                   from dept
+                   where loc='DALLAS');
+     
+ENAME                    DEPTNO
+-------------------- ----------
+SMITH                        20
+JONES                        20
+SCOTT                        20
+ADAMS                        20
+FORD                         20     
+
+문제) SALES부서에서 근무하는 모든 사원의 이름과 급여, 부서번호를 출력.
+   select ename, sal, deptno
+   from emp
+   where deptno=30;
+   
+   select ename, sal, deptno
+   from emp
+   where deptno=(select deptno
+                 from dept
+                 where dname='SALES' );
+
+ENAME                       SAL     DEPTNO
+-------------------- ---------- ----------
+ALLEN                      1600         30
+WARD                       1250         30
+MARTIN                     1250         30
+BLAKE                      2850         30
+TURNER                     1500         30
+JAMES                       950         30
+
+
+문제) 자신의 직속상사가 KING인 사원의 이름과 급여, 직속상사의 사원번호를 출력.
+   select ename, sal, mgr
+   from emp
+   where mgr=7839;
+   
+   select ename, sal, mgr
+   from emp
+   where mgr=(select empno
+               from emp
+               where ename='KING');
+
+ENAME                       SAL        MGR
+-------------------- ---------- ----------
+JONES                      2975       7839
+BLAKE                      2850       7839
+CLARK                      2450       7839
+
+문제) 평균급여보다 많은 급여를 받는 사원들의 사번, 사원명, 급여를 출력.(급여 내림차순)
+   select empno, ename, sal
+   from emp
+   where sal >= 2073.21429;
+     
+   select empno, ename, sal
+   from emp
+   where sal >= (select avg(sal)
+                 from emp)  
+   order by sal desc;  
+     
+문제) 10번 부서의 사원 중 전체(사원) 최대급여를 받는 사원과 동일한 급여를 받는 사원의
+     사원번호와 사원명을 출력.
+   select empno, ename
+   from emp
+   where sal = 5000;
+
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7839 KING                       5000
+      7902 FORD                       3000
+      7788 SCOTT                      3000
+      7566 JONES                      2975
+      7698 BLAKE                      2850
+      7782 CLARK                      2450     
+     
+문제) 10번 부서에서 근무하는 사원의 이름과 10번 부서의 부서명을 출력하시오.
+
+   select a,b,c,d,e,f
+   from   (select a,b,c from test1),  (select d,e,f from test2)  ;
+
+
+   select ename, dname
+   from  emp ,  (select dname from dept where deptno=10)
+   where deptno=10;
+
+ENAME                DNAME
+-------------------- ----------------------------
+CLARK                ACCOUNTING
+KING                 ACCOUNTING
+MILLER               ACCOUNTING
+
+   select ename, dname , (select '안녕~!!' from dual) MSG
+   from  emp ,  (select dname from dept where deptno=10)
+   where deptno=10;
+
+ENAME                DNAME                        MSG
+-------------------- ---------------------------- ------------------
+CLARK                ACCOUNTING                   안녕~!!
+KING                 ACCOUNTING                   안녕~!!
+MILLER               ACCOUNTING                   안녕~!!   
+   
+
+문제) BLAKE와 같은 부서에 있는 사원들의 이름과 입사일자, 부서번호를 출력하시오.
+   select ename, hiredate, deptno
+   from emp
+   where deptno = 30;
+           
+   select ename, hiredate, deptno
+   from emp
+   where deptno = (select deptno
+                   from  emp
+                   where ename='BLAKE');        
+      
+ENAME                HIREDATE     DEPTNO
+-------------------- -------- ----------
+ALLEN                81/02/20         30
+WARD                 81/02/22         30
+MARTIN               81/09/28         30
+BLAKE                81/05/01         30
+TURNER               81/09/08         30
+JAMES                81/12/03         30      
+      
+---> 사원추가!!
+   insert into emp    (empno, ename, hiredate, deptno)
+             values   (8000,  'BLAKE', sysdate, 20 );   
+        
+SQL> select ename, hiredate, deptno
+       from emp
+       where deptno = (select deptno
+                       from  emp
+                       where ename='BLAKE');
+                       
+   where deptno = (select deptno
+                   *
+ERROR at line 3:
+ORA-01427: single-row subquery returns more than one row  
+           ---> 단일 행이 나와야 하는 서브쿼리에
+                                 두개 이상의 행 결과가 나왔습니다!!   
+
+SQL> select deptno
+     from  emp
+     where ename='BLAKE';                                 
+
+    DEPTNO
+----------
+        30
+        20                                 
+  
+SQL> select ename, hiredate, deptno
+     from emp
+     where deptno = 20  or deptno = 30;
+       
+SQL> select ename, hiredate, deptno
+     from emp
+     where deptno IN (20,30);  
+  
+SQL> select ename, hiredate, deptno
+       from emp
+       where deptno IN (select deptno
+                       from  emp
+                       where ename='BLAKE');  
+  
+<다중 행 서브쿼리> ==> 서브쿼리의 결과행이 여러개(2개행 이상)
+- 서브쿼리에서 반환되는 결과가 하나이상의 행일 때 사용하는 서브쿼리.
+- 반드시 다중 행 연산자(Multiple Row Operator)와 함께 사용. 
+
+* 다중 행 연산자
+    IN : 메인쿼리의 비교조건이 서브쿼리의 결과중에서 하나라도 일치하면 참. 
+          su in (10,20,30)     
+    ANY,SOME : 메인쿼리의 비교조건이 서브쿼리의 결과와 하나이상 일치하면 참
+    ALL : 메인쿼리의 비교조건이 서브쿼리의 결과와 모든값이 일치하면 참.
+    EXISTS: 메인쿼리의 비교조건이 서브쿼리의 결과중에서 만족하는 값이 하나라도 
+                존재하면 참.  
+
+    select *
+    from dept
+    where exists (select *     ---> 서브쿼리 결과가 1행 이상이면 true
+                 from emp);
+                 
+    select *
+    from dept
+    where exists (select ename     ---> 서브쿼리 결과가 1행 이상이면 true
+                 from emp
+                 where 1=0);
+
+문제) 급여를 3000 이상 받는 사원이 소속된 부서와 동일한 부서에서 근무하는
+     사원들의 사원명, 급여, 부서번호를 출력하시오.
+     
+     select ename, sal, deptno   ---> 메인쿼리
+     from emp
+     where deptno IN (select deptno
+                     from emp
+                     where sal>=3000);
+
+       ===> deptno IN (20,10,20)
+
+ENAME                       SAL     DEPTNO
+-------------------- ---------- ----------
+BLAKE                                   20
+FORD                       3000         20
+ADAMS                      1100         20
+SCOTT                      3000         20
+JONES                      2975         20
+SMITH                       800         20
+MILLER                     1300         10
+KING                       5000         10
+CLARK                      2450         10
+
+문제) 부서번호가 30번인 사원들 중 급여를 가장 많이 받는 사원보다 더 많은 급여를 받는 사원의 사원명, 급여를 출력.
+    (ALL) ---> 모두 만족
+    
+    select ename, sal
+    from emp
+    where sal > (select sal 
+                 from emp
+                 where deptno=30);
+                 
+==> 에러발생 ORA-01427: single-row subquery returns more than one row    
+
+SQL> select sal
+     from emp
+     where deptno=30;
+
+       SAL
+----------
+      1600
+      1250
+      1250
+      2850
+      1500
+       950
+    
+    select ename, sal
+    from emp
+    where sal > ALL(select sal 
+                 from emp
+                 where deptno=30);
+    
+ENAME                       SAL
+-------------------- ----------
+JONES                      2975
+FORD                       3000
+SCOTT                      3000
+KING                       5000    
+    
+       SAL
+----------
+      1600 보다 크고
+      1250 보다 크고
+      1250 보다 크고
+      2850 보다 크고
+      1500 보다 크고
+       950 보다 크고
+       
+      ====>  ALL은 위의 6개 데이터 전체 보다 커야 함!! ===> 결국 가장 큰 값 2850보다 커야 함!!
+    
+    select ename, sal
+    from emp
+    where sal > (select max(sal) 
+                 from emp
+                 where deptno=30);    
+
+
+
+
+문제) 부서번호가 30번인 사원들 중 급여를 가장 적게 받는 사원보다 더 많은 급여를 받는 사원의 사원명, 급여를 출력.
+    (ANY) ---> 하나라도 만족
+    
+    select ename, sal
+    from emp
+    where sal > ANY (select sal          ---->950  1250   1500   1600   2850
+                 from emp
+                 where deptno=30);
+
+       SAL
+----------
+      1600 보다 크거나 또는
+      1250 보다 크거나 또는
+      1250 보다 크거나 또는
+      2850 보다 크거나 또는
+      1500 보다 크거나 또는
+       950 보다 크거나 또는
+       
+      ====>  ANY는 위의 6개 데이터 중 최소 한개 보다 커도 됨!! ===> 결국 가장 작은 값 950보다 커도 됨!!
+
+                 
+    select ename, sal
+    from emp
+    where sal >  (select min(sal)
+                 from emp
+                 where deptno=30);
+
+ENAME                       SAL
+-------------------- ----------
+KING                       5000
+FORD                       3000
+SCOTT                      3000
+JONES                      2975
+BLAKE                      2850
+CLARK                      2450
+ALLEN                      1600
+TURNER                     1500
+MILLER                     1300
+WARD                       1250
+MARTIN                     1250
+ADAMS                      1100
+
+   
+   
+   

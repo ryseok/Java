@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<!-- mission.html -->
+<body>
+ <h3>미션</h3>
+  문제1)<br>
+ <script type="text/javascript">
+    for(i=1; i<6; i++){//1~5 표현
+      document.write(i+" ");	
+    }
+ </script>
+ <hr>
+  문제2)<br>
+ <script>
+    for(var i=5; i>0; i--){
+      document.write(i+"<br>");	
+    }
+    
+    document.write('<hr>문제3)<br>[');
+    for(var i=3; i<13; i+=3){//i=i+3){
+      document.write(i)
+      if(i<12)document.write(", ");	
+    }
+    document.write(']')
+    
+    document.write('<hr>문제4)<br>');
+    
+    for(var i=1; i<10; i++){//i=1~9
+      document.write(3+"*"+i+'='+ (3*i)+"<br>");
+    }
+    
+    document.write('<hr>문제5-1)pre태그사용<br>');
+    
+    document.write('<pre>');//<pre>문서상의 공백유지 태그
+    for(var i=1; i<10; i++){//i=1~9
+     for(var dan=2; dan<10; dan++){//dan=2~9
+      document.write(dan+"*"+i+'='+ (dan*i)+"\t");
+     }
+      document.write("<br>");
+    }
+    document.write('</pre>');
+    
+    document.write('<hr>문제5-2)&amp;nbsp;사용<br>');
+    for(var i=1; i<10; i++){//i=1~9
+     for(var dan=2; dan<10; dan++){//dan=2~9
+    	var result = (dan*i);
+     
+       if(result<10)//곱한 결과가 한자리 수였을때
+    	 document.write(dan+"*"+i+'='+result +" &nbsp;&nbsp;&nbsp;&nbsp;");
+       else //곱한 결과가 두자리 수였을때
+    	 document.write(dan+"*"+i+'='+ result+" &nbsp;&nbsp;");
+     }
+      document.write("<br>");
+    }
+    
+    document.write('<hr>문제5-3)table태그사용<br>');
+    
+    document.write('<table cellpadding=5>')//1회반복
+    for(var i=1; i<10; i++){//i=1~9
+    	
+       document.write('<tr>')//9회반복	
+    
+     for(var dan=2; dan<10; dan++){//dan=2~9
+       document.write('<td>'+dan+"*"+i+'='+ (dan*i)+'</td>');
+       //   9회(8회) ---> 72회 반복
+     }
+       document.write('</tr>')//9회반복
+    }
+  
+    document.write('</table>');//1회반복
+ </script>
+  
+</body>
+</html>
+
+
+

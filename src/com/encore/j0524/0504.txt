@@ -1,0 +1,49 @@
+
+
+<객체 직렬화> Serialization
+- 객체를 연속적인 데이터로 변환하는 것
+  (반대과정은 역직렬화라고 함)
+- 객체의 인스턴스변수들의 값을 일렬로 나열하는 것.
+  ---> 객체를 파일이나 네트워크에 전송하기 위해 바이트형태의 데이터로 변환하는 것!!
+  
+ class Person{
+   String name;
+   int age;
+   String job; 
+ }  
+ ---> class Person [String name int age String job]
+  
+관련클래스)
+  ObjectOutputStream, ObjectInputStream
+  Serializable(마커 인터페이스)  
+  
+===========================================================================
+java.net.*;
+
+<InetAddress>
+- IP주소를 다루기 위한 클래스
+  XXX.XXX.XXX.XXX
+  XXX: 0~255
+
+ 주요메소드)
+    byte[] getAddress()
+    static InetAddress[] getAllByName(String host)
+    static InetAddress getByName(String host)
+    String getHostAddress()
+    String getHostName()
+    
+<URL> Uniform Resource Location
+
+http://www.gildong.co.kr:80/test/hello.jsp?name=gildong&age=13&job=student#index1
+
+프로토콜: 자원에 접근하기 위해 서버와 통신하는데 사용되는 통신규약(http)
+호스트명: 자원을 제공하는 서버의 이름   www.gildong.co.kr
+포트번호: 통신에 사용되는 서버의 포트번호    80
+경로명: 접근하려는 자원이 저장된 서버상의 위치    /test/
+파일명: 접근하려는 자원의 이름         hello.jsp
+쿼리(query): URL에서 '?'이후의 부분   name=gildong&age=13&job=student
+참조(anchor): URL에서 #이후의 부분
+
+<URLConnection>
+- 어플리케이션과 URL간의 통신연결을 나타내는 클래스의 최상위 클래스
+- URLConnection을 사용해서 연결하고자 하는 자원에 접근하고 읽고 쓰기를 할 수 있다.  

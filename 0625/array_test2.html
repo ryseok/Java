@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>자바스크립트 배열</title>
+</head>
+<!-- array_test2.html -->
+<body>
+  <h3>자바스크립트 배열 테스트</h3>
+  <script type="text/javascript">
+    var myArray1= new Array(3);       
+    document.write('myArray1배열의 크기 = '+ myArray1.length);
+       myArray1[0]=11;
+       myArray1[1]='홍길동';
+       myArray1[2]=true;
+       myArray1[3]=3.14;
+    document.write('<br>myArray1배열의 크기 = '+ myArray1.length);
+       
+    document.write('<hr>');
+    //정해진 데이터를 배열에 저장.
+    //var myArray2={1,2,3,4,5};  에러: {  }는  JSON데이터를 표현!!
+    var myArray2=[1,2,3,4,5];  
+    for(var i=0; i<myArray2.length; i++){//배열인덱스 표현
+    	document.write('<br>myArray2['+i+']='+ myArray2[i]);
+    }
+    
+    //2차원배열
+    document.write('<hr>');
+       //     행          0     1       2
+    var myArray3 = [[1], [1,2], [1,2,3]];
+       //    열           0    0 1    0 1 2
+       
+    for(var i=0; i<myArray3.length; i++){//행인덱스 표현
+    	for(var j=0; j<myArray3[i].length; j++){//열인덱스 표현
+    		document.write('<br>myArray3['+i+']['+j+']='+ myArray3[i][j]);
+    	}
+    }       
+    
+    document.write('<hr>');
+    var myArray4 = new Array('홍','길','동');
+    for(var i=0; i<myArray4.length; i++){//배열인덱스 표현
+    	document.write('<br>myArray4['+i+']='+ myArray4[i]);
+    }
+    
+    document.write('<hr>');
+    var myArray5 = ["사과","딸기","바나나","복숭아"];
+    
+    myArray5.pop(); //'복'데이터 빼기
+    myArray5.pop(); //'바'데이터 빼기
+    myArray5.pop(); //'딸'데이터 빼기
+    
+    myArray5.push('수박'); //데이터 입력
+    myArray5.push('메론','포도');
+    
+    //[사과,수박,메론,포도]
+    myArray5.reverse();
+    //==> [포도,메론,수박,사과]
+    
+    myArray5.sort();
+    //==> [메론,사과,수박,포도]
+    
+    for(var i=0; i<myArray5.length; i++){//배열인덱스 표현
+    	document.write('<br>myArray5['+i+']='+ myArray5[i]);
+    }
+    
+    document.write('<hr>');
+    //문제) 브라우저 화면에 '2018년 6월 25일 10시 38분 20초 (월요일)'을 출력하시오.
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth() +1 ;//(0~11) 1월~12월
+    var date = now.getDate();
+    var h = now.getHours();
+    var m = now.getMinutes();
+    var s = now.getSeconds();
+    var day = now.getDay();//0~6  (일요일, 월요일, ..., 토요일)
+    
+    var dayStr=['일','월','화','수','목','금','토'];
+   
+    var dayStr='일월화수목금토';
+    //인덱스          0 12 34 56
+   //문자열.substr(시작인덱스, 가져올갯수)
+    
+   
+    document.write(year+'년 '+month+'월 '+date+'일 '+
+    		      h+'시 '+m+'분 '+s+'초 ('+   dayStr[day] +'요일)');
+    
+    document.write('<br>'+year+'년 '+month+'월 '+date+'일 '+
+    		      h+'시 '+m+'분 '+s+'초 ('+  dayStr.substr(day,1) +'요일)');
+    
+    document.write('<br>'+year+'년 '+month+'월 '+date+'일 '+
+    		      h+'시 '+m+'분 '+s+'초 ('+  dayStr.charAt(day) +'요일)');
+    
+    
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

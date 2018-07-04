@@ -1,0 +1,996 @@
+
+
+
+
+
+
+<제약 Constraint> - 데이터 무결성을 위해서, 부적절한(원치않는) 데이터 입력 또는 수정 방지.
+1. not null
+   - 반드시 입력(행 insert시 무조건 입력!!)
+   
+   create table emp(
+      empno number(4),
+      ename varchar2(15) not null
+   );
+   
+   insert into emp (empno) values (8000);  ----> ename은 null값 입력!!
+   insert into emp (empno,ename) values (8000,null);  ----> ename은 null값 입력!!
+   insert into emp (empno,ename) values (8000,'');  ----> ename은 null값 입력!!
+
+2. unique
+   - 중복데이터 방지
+   - null중복 방지X
+
+3. primary key
+   - not null + nuique
+   ===> 서로 다른 행을 구분하는 키. 
+  
+4. foreign key
+   - 존재하지 않는 데이터 입력 또는 수정 방지!!
+
+5. check
+   - 특정 범위 또는 특정 값목록에 있는 데이터만 입력
+
+<제약설정하기> constraint_type 설정하기!!
+
+1. 컬럼레벨 설정
+   create table 테이블명(
+          컬럼명1  자료형 [CONSTRAINT 제약명] constraint_type,
+          컬럼명2 자료형,
+          컬럼명3  자료형
+   );
+
+2. 테이블레벨 설정   
+   create table 테이블명(
+          컬럼명1  자료형,
+          컬럼명2 자료형,
+          컬럼명3  자료형,
+     [CONSTRAINT 제약명] constraint_type (적용할 컬럼명) 
+   );
+   
+3. 테이블 생성 후 제약추가   (없는 제약을 있게 만들어 줌!!)
+   create table 테이블명(
+          컬럼명1  자료형,
+          컬럼명2 자료형,
+          컬럼명3  자료형
+   );
+   
+   insert ~
+   insert ~
+   insert ~
+   
+   alter table 테이블명
+   ADD [CONSTRAINT 제약명] constraint_type (적용할 컬럼명);
+
+4. 제약삭제
+   alter table 테이블명
+   DROP constraint  제약명;
+   
+   alter table 테이블명
+   DROP primary key;
+ 
+5. 제약수정 (null  <----> not null)
+   alter table 테이블명
+   MODIFY 컬럼명 [constraint 제약명] NOT NULL | NULL;   
+
+
+-----------------------------------------------------------------   
+문제) emp2테이블을 새롭게 생성(empno, ename, sal, deptno컬럼)하고
+     테이블 생성 후 empno에 primary key 설정을 하고
+     ename, sal, deptno에 not null설정하시오!!
+    
+   drop table emp2;
+   create table emp2(
+     empno number(4),
+     ename varchar2(15),
+     sal   number(7,2),
+     deptno number(2)
+   ); 
+   
+   alter table emp2
+   add primary key (empno);
+        또는
+   alter table emp2
+   add constraint emp2_pk primary key (empno);
+   
+   alter table emp2
+   add constraint emp2_ename_nn not null (ename);
+                                *
+                                
+  ---> ORA-00904: : invalid identifier  
+  ---> add not null 안되는 이유?
+                테이블내의 모든 컬럼은 특별한 설정(not null 또는 primary key)을 하지 않았을때
+                               null값이 기본으로 설정되어짐!!
+
+<제약수정>
+ ALTER TABLE 테이블명
+ MODIFY 컬럼명 [CONSTRAINT 제약명]  NOT NULL | NULL;   
+   
+ alter table emp2
+ modify ename not null;  
+
+SQL> desc emp2
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                 NOT NULL VARCHAR2(15)
+ SAL                                                            NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+
+ alter table emp2
+ modify sal constraint emp2_sal_nn not null;
+   
+ alter table emp2
+ modify deptno not null;  
+
+SQL> desc emp2
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                 NOT NULL VARCHAR2(15)
+ SAL                                                   NOT NULL NUMBER(7,2)
+ DEPTNO                                                NOT NULL NUMBER(2)
+ 
+문제) emp2테이블의 sal컬럼의 not null 제약을 삭제하시오!!
+  alter table emp2
+  modify sal null;
+            not null ---> null 변경
+   
+   <제약이름을 통한 not null삭제>
+  alter table emp2
+  modify sal constraint emp2_sal_nn not null;            
+ 
+  alter table emp2
+  drop constraint emp2_sal_nn;          
+ 
+SQL> desc emp2
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                 NOT NULL VARCHAR2(15)
+ SAL                                                            NUMBER(7,2)
+ DEPTNO                                                NOT NULL NUMBER(2)
+
+4. foreign key(외래키, 참조키)
+  - 참조하는 테이블의 컬럼데이터 범위내의 데이터만 입력.
+  - 예) 사원정보를 입력할 때 반드시 존재하는 부서의 번호를 속성값으로 가져와야 함!!
+       ===>사원테이블(emp)에서 사원의 정보를 입력,수정시
+               부서테이블(dept)로 부터 존재하는 부서번호인지를 참조, 확인해야 함!!
+  - 참조되는 컬럼은 unique 또는 primary key 설정이 되어 있어야 함.
+  
+  사원테이블(deptno 입력, 수정) -------> 부서테이블(deptno참조)
+                                      10
+                                      20
+                                      30
+                                      40
+                                      
+  ---> 컬럼레벨
+    create table 테이블명emp
+    (  
+             컬럼명      자료형   [CONSTRAINT 제약명] REFERENCES 참조테이블명 (참조컬럼명)
+       deptno number(2)                 references dept      (deptno)
+    );
+      
+  ---> 테이블레벨
+    create table 테이블명emp
+    (  
+               컬럼명1 자료형,
+               컬럼명2deptno 자료형,
+               컬럼명3 자료형,
+               
+       [CONSTRAINT 제약명] FOREIGN KEY (컬럼명2)
+                         REFERENCES 참조테이블명 (참조컬럼명)
+       ----> foreign key (deptno)   
+             references dept (deptno)
+    );  
+  
+  ---> (테이블 생성 끝난 후 foreign key 추가)
+  alter table 테이블명
+  ADD  [CONSTRAIN 제약명]  foreign key (deptno)   
+                         references dept (deptno)
+
+------------------------------------------------------------------
+ 참조되는 테이블(부모테이블) DEPT2
+ drop table dept2;
+ create table dept2
+ as select * from dept;
+ ----> 구조와 데이터를 복사 (제약은 제외!!) 
+ 
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+
+-------------------------------------------------------------------
+ 참조하는 테이블(자식테이블) EMP2
+ drop table emp2;
+ create table emp2
+ as select empno, ename, sal, deptno
+    from emp
+    where 1=0;
+    ==> 특정컬럼(empno, ename, sal, deptno)에 대한 구조만 복사하고 데이터는 복사X
+ 
+문제) emp2테이블내의 empno에 primary key설정,
+                 deptno에 foreign key설정을 하시오.
+   
+   alter table emp2
+   add constraint emp2_empno_pk primary key (empno);               
+   ---> Table altered.(변경성공!!)
+   
+   alter table emp2
+   add constraint emp2_deptno_fk 
+       foreign key (deptno)     -- 현재 테이블의 컬럼          
+       references dept2 (deptno);   --참조 테이블의 컬럼             
+   
+---> ORA-02270: no matching unique or primary key for this column-list 
+      참조되는 컬럼(dept2테이블---> deptno컬럼)은 반드시 unique 또는 primary key 설정
+ 
+    - dept2의 deptno: unique설정
+    alter table dept2
+    add constraint dept2_uk unique (deptno);
+     
+         또는
+         
+    alter table dept2
+    add constraint dept2_pk primary key (deptno); 
+    ==> 변경성공!!
+  
+   alter table emp2
+   add constraint emp2_deptno_fk 
+       foreign key (deptno)     -- 현재 테이블의 컬럼          
+       references dept2 (deptno);   --참조 테이블의 컬럼               
+
+-----------------------------------------------------------------
+문제1) emp3테이블을 새롭게 생성(empno, ename, sal, deptno)하고
+    dept3테이블을 dept테이블 참조하는 서브쿼리를 통해 생성(전체구조,데이터) 하시오.
+    
+   drop table emp3;
+   create table emp3
+   (
+      empno number(4),
+      ename varchar2(15),
+      sal   number(7,2),
+      deptno number(2)
+   ); 
+   
+   drop table dept3;
+   create table dept3
+   as select * from dept;
+    
+   number(7,2) ==> 전체자릿수 7, 소수점 이하 2
+             12345.67  정수는 소수점 이하를 뺀 자릿수 가져야 함  7-2: 5
+             
+          insert into values(12345.678)~   ==> 12345.68저장!!   
+          insert into values(12345.674)~   ==> 12345.67저장!!   
+    
+    
+문제2) emp3테이블의 deptno가 dept3테이블의 deptno를 참조하도록 하시오.
+      (unique사용)
+      
+    --부모테이블 참조하는 컬럼에 대한 primary key 또는 unique설정!!      
+    alter table dept3
+    add unique (deptno);
+         또는
+    alter table dept3
+    add constraint dept3_deptno_uk unique (deptno);
+    
+    alter table emp3
+    add constraint emp3_deptno_fk foreign key (deptno)
+        references dept3 (deptno);
+    
+
+문제3) dept3테이블의 unique제약을 삭제하고 deptno에 primary key 제약 설정.
+    alter table dept3
+    drop constraint dept3_deptno_uk; 
+
+---> ORA-02273: this unique/primary key is referenced by some foreign keys
+---> 참조하는 테이블이 존재하는 경우에는 unique 와 primary key를 삭제할 수 없음!!
+
+  삭제해결1) 참조하는 테이블의 foreign key를 삭제 후 부모테이블의 unique,primary key삭제
+   -외래키 삭제 (자식테이블쪽의 foreign key)   
+      alter table emp3
+      drop constraint emp3_deptno_fk; 
+      ===> 변경성공!!
+
+   -unique 삭제
+      alter table dept3
+      drop constraint dept3_deptno_uk; 
+      ===> 변경성공!!
+
+  삭제해결2) 옵션을 사용(참조하는 테이블이 여러 개 있을 때 유용)
+     alter table dept3
+     drop constraint dept3_deptno_uk CASCADE;
+     ==> 변경성공!!
+     ==> CASCADE: 자동으로 관련된 모든fk를 먼저 삭제해줌.
+     
+     alter table dept3
+     add constraint dept3_deptno_pk primary key (deptno);
+     ==> 변경성공!!
+
+     alter table emp3
+     add constraint emp3_deptno_fk
+         foreign key (deptno)   -- 자식테이블
+         references  dept3(deptno);   -- 부모테이블
+     ==> 변경성공!!    
+         
+<CHECK제약>
+  - 특정 범위내의 데이터만 입력
+  - 정해진 데이터만 입력
+  형식) CHECK (조건식)
+  
+문제) emp4테이블 생성
+    사원번호 : primary key
+    사원명    : 기본값 '무명' 지정 - [default 데이터] 사용
+    급여       : 최소 500, 최대 1000  - [check (조건식)] 사용
+    매니저    : 반드시 입력                  - [not null]
+    부서번호  : 부서테이블(dept3)의 부서번호 참조 - [foreign key] 사용
+    성별(gender) : 'M' 또는 'F' 입력 체크 - [check (조건식)] 사용
+    
+create table emp4
+(
+   empno number constraint emp4_pk  primary key,
+   ename varchar2(15) default '무명',
+   sal   number  check (sal between 500 and 1000),
+                 --check (sal>=500 and sal<=1000),
+   mgr    number not null,
+   deptno number(2) constraint emp4_fk references dept3(deptno),
+   gender char(1) check (gender IN ('M','F'))
+                  --check (gender='M' or gender='F')
+); 
+ ===> 테이블 생성 성공!!
+ 
+ insert into emp4 (empno, ename, sal, mgr, deptno, gender)
+           values (8000,'홍길동',1000, 8001, 10, 'F');
+           
+ insert into emp4 (empno,  sal, mgr, deptno)
+           values (8001,  1000, 8001, 10);  -- default '무명' 테스트
+
+SQL> select empno, ename, deptno, gender from emp4;
+
+     EMPNO ENAME                              DEPTNO GE
+---------- ------------------------------ ---------- --
+      8000 홍길동                                                               10 F
+      8001 무명                                                                  10
+      
+ insert into emp4 (empno, ename, sal, mgr, deptno, gender)
+           values (8002, '길라임', 1001, 8001, 10, 'F');  ---sal: check     
+
+ORA-02290: check constraint (SCOTT.SYS_C007026) violated
+                   ----> sal :500~1000       
+ 
+ insert into emp4 (empno, ename, sal, mgr, deptno, gender)
+           values (8002, '길라임', 1000, 8001, 10, '남');
+ 
+ORA-12899: value too large for column "SCOTT"."EMP4"."GENDER" (actual: 3, maximum: 1) 
+ 
+ insert into emp4 (empno, ename, sal, mgr, deptno, gender)
+           values (8002, '길라임', 1000, 8001, 10, 'm'); 
+ 
+ORA-02290: check constraint (SCOTT.SYS_C007027) violated
+                     ---> gender : 'M' 또는 'F' 
+ 
+ insert into emp4 (empno, ename, sal, mgr, deptno, gender)
+           values (8002, '길라임', 1000, 8001, 10, upper('m'));     
+    
+    SQL> select empno, ename, deptno, gender from emp4;
+
+     EMPNO ENAME                              DEPTNO GE
+---------- ------------------------------ ---------- --
+      8000 홍길동                                                                10 F
+      8001 무명                                                                   10
+      8002 길라임                                                                10 M
+    
+============================================================    
+ 
+<데이터 딕셔너리> DD 시스템테이블
+- 데이터베이스 자원을 효율적으로 관리하기 위한 다양한 정보를 저장하는
+  시스템 테이블.
+- 사용자가 테이블을 생성하거나 사용자를 변경하는 등의 작업을 할때
+  데이터베이스서버에 의해 자동으로 갱신되는 테이블.
+  
+<제약조건 확인하기>  
+- user_constraints
+- desc user_constraints  
+
+OWNER            : 제약조건을 소유한 사용자명
+CONSTRAINT_NAME  : 제약조건명
+CONSTRAINT_TYPE  : 제약조건타입
+TABLE_NAME       : 제약이 속한 테이블명
+SEARCH_CONDITION : check제약일 경우 조건으로 사용되어지는 설명.
+R_CONSTRAINT_NAME : foreign key경우 어떤 primary key를 참조했는지 정보.
+
+<CONSTRAINT_TYPE>
+P : primary key
+R : foreign key
+U : unique
+C : check, not null    
+
+select table_name, constraint_name, constraint_type
+from user_constraints;
+ 
+select table_name, constraint_name, constraint_type
+from user_constraints
+where table_name in ('EMP4','DEPT3'); 
+      
+============================================================    
+<뷰> View
+
+- 물리적인 테이블을 근거한 논리적인 가상테이블.
+ (가상: 실질적으로 데이터를 저장하고 있지 않는다.)
+   ----> 독립적인 테이블은 아니다!!
+   
+- 기본테이블에 대한 하나의 쿼리문.(text를 저장하는 객체) 
+- 자주 사용되는 복잡하고 긴 쿼리문을 저장하는 객체.
+- 특정컬럼만 보여지게끔하여 보안을 목적으로 사용.  
+
+형식) CREATE VIEW 뷰이름
+     AS select_statement;
+  
+     create view emp_copy
+     as select * from emp;
+     
+---> ORA-01031: insufficient privileges (권한 불충분!!)  
+
+<권한부여> - 관리자
+   형식) GRANT system_privilege
+       TO user_name;
+
+<권한회수> - 관리자 
+   형식) REVOKE system_privilege
+       FROM user_name;
+       
+- 관리자 계정 연결
+ SQL> conn system/oracle       
+           
+- 뷰객체 생성 권한 ---> scott
+   grant CREATE VIEW to scott;
+
+conn scott/tiger
+
+<데이터베이스 관리자가 가지는 시스템권한>
+CREATE USER - 새롭게 사용자를 생성하는 권한
+DROP USER - 사용자를 삭제하는 권한
+DROP ANY TABLE - 임의의 테이블을 삭제할 수 있는 권한
+QUERY REWRITE - 질의 재작성을 할 수 있는 권한
+BACKUP ANY TABLE - 임의의 테이블을 백업할 수 있는 권한
+
+<데이터베이스 관리권한>
+CREATE SESSION - 데이터베이스에 접속할 수 있는 권한
+CREATE TABLE - 사용자 스키마에서 테이블을 생성할 수 있는 권한.
+CREATE VIEW - 사용자 스키마에서 뷰을 생성할 수 있는 권한.
+CREATE SEQUENCE - 사용자 스키마에서 시퀀스을 생성할 수 있는 권한.
+CREATE PROCEDURE - 사용자 스키마에서 함수을 생성할 수 있는 권한.  
+
+SQL> create view emp_copy
+     as select * from emp;
+    ===> 뷰생성 성공^^*
+
+desc emp_copy
+
+SQL> desc emp_copy
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+
+문제) 30번 부서 사원들의 정보를 출력 (emp_copy: 뷰객체!!)
+  select empno, ename, sal, deptno
+  from  emp_copy
+  where  deptno=30;
+
+    EMPNO ENAME                       SAL     DEPTNO
+---------- -------------------- ---------- ----------
+      7499 ALLEN                      1600         30
+      7521 WARD                       1250         30
+      7654 MARTIN                     1250         30
+      7698 BLAKE                      2850         30
+      7844 TURNER                     1500         30
+      7900 JAMES                       950         30
+      
+문제) emp(원본, 물리적테이블)테이블에 홍길동 사원을 추가하시오!!
+  insert into emp (empno, ename, sal, deptno)
+           values (8000, '홍길동', 3000, 30);        
+  ---> 입력성공!!
+  ---> 추가는 emp(TABLE) , 조회는 emp_copy(VIEW)
+
+  select empno, ename, sal, deptno
+  from  emp_copy
+  where  deptno=30;
+
+     EMPNO ENAME                       SAL     DEPTNO
+---------- -------------------- ---------- ----------
+      8000 홍길동                                         3000         30
+      7499 ALLEN                      1600         30
+      7521 WARD                       1250         30
+      7654 MARTIN                     1250         30
+      7698 BLAKE                      2850         30
+      7844 TURNER                     1500         30
+      7900 JAMES                       950         30
+   
+   ---> emp_copy는 기준테이블(emp)을 참조하는 논리적인 테이블이기 때문에!!
+   
+desc user_views   
+   
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ VIEW_NAME                                             NOT NULL VARCHAR2(30)
+ TEXT_LENGTH                                                    NUMBER
+ TEXT                                                           LONG
+ TYPE_TEXT_LENGTH                                               NUMBER
+ TYPE_TEXT                                                      VARCHAR2(4000)
+ OID_TEXT_LENGTH                                                NUMBER
+ OID_TEXT                                                       VARCHAR2(4000)
+ VIEW_TYPE_OWNER                                                VARCHAR2(30)
+ VIEW_TYPE                                                      VARCHAR2(30)
+ SUPERVIEW_NAME                                                 VARCHAR2(30)
+ EDITIONING_VIEW                                                VARCHAR2(1)
+ READ_ONLY                                                      VARCHAR2(1)   
+   
+select view_name, text from user_views;      
+         
+VIEW_NAME         TEXT
+------------------------------------------------------------
+EMP_COPY      select "EMPNO","ENAME","JOB","MGR","HIREDATE","SAL","COMM","DEPTNO" from emp
+
+문제) 30번 부서에 근무하는 사원의 사원번호, 사원명, 급여를 자주 조회한다.
+        이를 뷰로 생성하시오.
+
+   create view emp_copy
+   as select empno, ename, sal
+      from emp
+      where deptno=30;        
+---> ORA-00955: name is already used by an existing object
+             ---> 테이블과 마찬가지로 뷰객체도 이미 존재하는 이름을 사용할 수 없음!!
+
+   create view emp30
+   as select empno, ename, sal
+      from emp
+      where deptno=30;
+   ==> 뷰생성 성공!!
+   
+   select * from emp30;
+   
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7499 ALLEN                      1600
+      7521 WARD                       1250
+      7654 MARTIN                     1250
+      7698 BLAKE                      2850
+      7844 TURNER                     1500
+      7900 JAMES                       950
+      8000 홍길동                                         3000
+
+<View형식>
+   CREATE [OR REPLACE] [FORCE|NOFORCE] VIEW 뷰이름 [(alias)]
+   AS select_statement
+   [WITH CHECK OPTION [CONSTRAINT 제약명]]
+   [WITH READ ONLY [CONSTRAINT 제약명]];  
+
+  ---> 뷰 emp30에 입사일, 부서번호를 추가!!
+    create view emp30
+    as select empno,ename,sal, hiredate, deptno
+       from emp
+       where deptno=30;
+  ---> ORA-00955: name is already used by an existing object
+         ---> 이미 객체이름을 사용중에 있습니다!!
+
+    create OR REPLACE view emp30 
+     -- 존재하지 않는 뷰는 새로 생성하고 존재하는 뷰의 경우에는 text내용만 변경해라!!
+    as select empno,ename,sal, hiredate, deptno
+       from emp
+       where deptno=30;
+      ==> 뷰생성 성공!!
+
+desc emp30
+
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ SAL                                                            NUMBER(7,2)
+ HIREDATE                                                       DATE
+ DEPTNO                                                         NUMBER(2)
+
+   CREATE [OR REPLACE] [FORCE|NOFORCE] VIEW 뷰이름 [(alias)]
+   AS select_statement
+   [WITH CHECK OPTION [CONSTRAINT 제약명]]
+   [WITH READ ONLY [CONSTRAINT 제약명]];
+     
+문제) abc테이블(존재하지 않는 테이블)의 모든 컬럼을 조회하는 뷰를 생성하시오.
+  create or replace view abc_view
+  as select * from abc;
+---> ORA-00942: table or view does not exist
+
+  create or replace force view abc_view
+  as select * from abc;
+---> Warning: View created with compilation errors.
+
+VIEW_NAME                              TEXT
+--------------   ---------------------------------------------------------------
+EMP_COPY           select "EMPNO","ENAME","JOB","MGR","HIREDATE","SAL","COMM","DEPTNO" from emp
+
+EMP30              select empno,ename,sal, hiredate, deptno
+                   from emp
+                   where deptno=30
+
+ABC_VIEW           select * from abc
+         
+문제) emp30(empno,ename,sal,hiredate,deptno)에서 mgr을 조회하시오.
+   select empno, ename
+   from emp30;
+
+     EMPNO ENAME
+---------- --------------------
+      7499 ALLEN
+      7521 WARD
+      7654 MARTIN
+      7698 BLAKE
+      7844 TURNER
+      7900 JAMES
+      8000 홍길동
+
+   select empno, ename, mgr
+   from emp30;
+   ---> ORA-00904: "MGR": invalid identifier
+            ---> emp테이블에는 mgr이 존재하지만
+                 emp30(뷰)에 정의되지 않은 컬럼(mgr)은 조회 불가!!
+                 
+<뷰에 대한 DML>
+  delete from emp where empno=8000;
+  
+  drop view emp_copy;
+  
+  create table emp_copy --기준테이블 (<=== emp_copy를 참조하는 뷰통해 DML작업!!)
+  as select * from emp;
+  
+  ----- 뷰 생성 -------
+  create or replace view emp30
+  as select empno, ename, sal, deptno
+     from emp_copy
+     where deptno=30; 
+
+SQL> select * from emp30;
+
+     EMPNO ENAME                       SAL     DEPTNO
+---------- -------------------- ---------- ----------
+      7499 ALLEN                      1600         30
+      7521 WARD                       1250         30
+      7654 MARTIN                     1250         30
+      7698 BLAKE                      2850         30
+      7844 TURNER                     1500         30
+      7900 JAMES                       950         30   
+      
+   ▶ 뷰를 통한 입력
+  insert into emp30 values (8000,'나길동',3000,30);
+  insert into emp30 values (6000,'너길동',3000,30);
+  
+SQL> select * from emp30;
+
+     EMPNO ENAME                       SAL     DEPTNO
+---------- -------------------- ---------- ----------
+      7499 ALLEN                      1600         30
+      7521 WARD                       1250         30
+      7654 MARTIN                     1250         30
+      7698 BLAKE                      2850         30
+      7844 TURNER                     1500         30
+      7900 JAMES                       950         30
+      8000 나길동                                         3000         30
+      6000 너길동                                         3000         30  
+  
+select empno, ename from emp_copy;    
+   
+    EMPNO ENAME
+---------- --------------------   
+      7876 ADAMS
+      7900 JAMES
+      7902 FORD
+      7934 MILLER
+      8000 나길동
+      6000 너길동        
+     
+  insert into emp30 values (8002,'길라임',3000, 20);
+     ===> 추가 성공!!
+
+SQL> select * from emp30;
+
+     EMPNO ENAME                       SAL     DEPTNO
+---------- -------------------- ---------- ----------
+      7499 ALLEN                      1600         30
+      7521 WARD                       1250         30
+      7654 MARTIN                     1250         30
+      7698 BLAKE                      2850         30
+      7844 TURNER                     1500         30
+      7900 JAMES                       950         30
+      8000 나길동                                         3000         30
+      6000 너길동                                         3000         30     
+     
+SQL> select empno,ename from emp_copy;
+
+     EMPNO ENAME
+---------- --------------------
+      7900 JAMES
+      7902 FORD
+      7934 MILLER
+      8000 나길동
+      6000 너길동
+      8002 길라임  
+  
+   ▶ 뷰를 통한 삭제
+    delete from emp30;
+     ==> 8행 삭제
+     
+ SQL> select * from emp30;
+     ==> 결과행 없음 
+  
+ select count(*) from emp_copy;
+
+  COUNT(*)
+----------
+         9    (14+3-8)
+
+  CREATE [OR REPLACE] [FORCE|NOFORCE] VIEW 뷰이름 [(alias)]
+   AS select_statement
+   [WITH CHECK OPTION [CONSTRAINT 제약명]]
+   [WITH READ ONLY [CONSTRAINT 제약명]];
+
+  create or replace view emp20
+  as select empno, ename, sal, deptno
+     from emp_copy
+     where deptno=20
+  with read only;               
+  ===> (읽기 전용:DML불가)뷰생성 성공!!                 
+                 
+SQL> select * from emp20;
+
+     EMPNO ENAME                       SAL     DEPTNO
+---------- -------------------- ---------- ----------
+      7369 SMITH                       800         20
+      7566 JONES                      2975         20
+      7788 SCOTT                      3000         20
+      7876 ADAMS                      1100         20
+      7902 FORD                       3000         20
+      8002 길라임                                         3000         20                 
+                 
+<뷰 통한 입력>
+  insert into emp20 values (9000,'김주원',9000, 20);
+---> ORA-42399: cannot perform a DML operation on a read-only view
+   
+<뷰 통한 삭제>   
+  delete from emp20;
+---> ORA-42399: cannot perform a DML operation on a read-only view
+
+<뷰 통한 수정>
+  update emp20 set sal=9999;
+---> ORA-42399: cannot perform a DML operation on a read-only view
+
+  CREATE [OR REPLACE] [FORCE|NOFORCE] VIEW 뷰이름 [(alias)]
+   AS select_statement
+   [WITH CHECK OPTION [CONSTRAINT 제약명]]
+   [WITH READ ONLY [CONSTRAINT 제약명]];
+
+
+<뷰에 별명주기!!>
+  create or replace view emp20 (나별명) 
+  as select empno, ename, sal, deptno
+  from emp_copy
+  where deptno=20;
+  
+---> ORA-01730: invalid number of column names specified   
+       ----> 뷰이름 다음에 명시되는 alias는 컬럼에 대한 별명임!!
+
+  create or replace view emp20 (사원번호, 사원명, 급여, 부서번호) 
+  as select                     empno, ename, sal, deptno
+     from emp_copy
+     where deptno=20;
+  ==> 뷰 생성 성공!!
+  
+문제) emp20뷰에서 사원번호와 사원명만 조회하시오!!  
+  select empno, ename
+  from emp20;
+==> ORA-00904: "ENAME": invalid identifier  
+      ---> 조회컬럼에 별명을 지정한 경우 별명을 통한 조회를 해야 함!!
+      
+  select 사원번호, 사원명
+  from emp20;  
+  
+        사원번호 사원명
+---------- --------------------
+      7369 SMITH
+      7566 JONES
+      7788 SCOTT
+      7876 ADAMS
+      7902 FORD
+      8002 길라임  
+  
+SQL> select * from emp20;
+
+        사원번호 사원명                                           급여         부서번호
+---------- -------------------- ---------- ----------
+      7369 SMITH                       800         20
+      7566 JONES                      2975         20
+      7788 SCOTT                      3000         20
+      7876 ADAMS                      1100         20
+      7902 FORD                       3000         20
+      8002 길라임                                         3000         20
+
+문제) 'ADAMS' 사원을 10번 부서로 이동하시오.(emp20뷰를 통해)  
+     update emp20 set 부서번호=10
+           where 사원번호=7876;
+    
+문제) '김유신' 사원을 30번 부서에 추가하시오.(emp20뷰를 통해)      
+      insert into emp20 values (8004,'김유신',2000,30); 
+
+SQL> select * from emp20;
+        사원번호 사원명                                           급여         부서번호
+---------- -------------------- ---------- ----------
+      7369 SMITH                       800         20
+      7566 JONES                      2975         20
+      7788 SCOTT                      3000         20
+      7902 FORD                       3000         20
+      8002 길라임                                          3000         20      
+      
+   CREATE [OR REPLACE] [FORCE|NOFORCE] VIEW 뷰이름 [(alias)]
+   AS select_statement
+   [WITH CHECK OPTION [CONSTRAINT 제약명]]
+   [WITH READ ONLY [CONSTRAINT 제약명]];        
+      
+   create or replace view emp20 (사원번호, 사원명, 급여, 부서번호)
+   as select empno, ename, sal, deptno
+      from emp_copy
+      where  deptno=20 with check option;
+      ---> check option : deptno=20에 위반되는 추가,수정을 제한!!
+      
+문제) 'FORD' 사원을 10번 부서로 이동하시오.(emp20뷰를 통해)  
+     update emp20 set 부서번호=10
+           where 사원번호=7902;
+     ---> ORA-01402: view WITH CHECK OPTION where-clause violation
+     
+문제) '김유신2' 사원을 30번 부서에 추가하시오.(emp20뷰를 통해)      
+      insert into emp20 values (8006,'김유신2',2000,30);       
+     ---> ORA-01402: view WITH CHECK OPTION where-clause violation 
+      
+      insert into emp20 values (8006,'김유신2',2000,20);       
+     ---> 입력 성공!! ^^* 
+       
+======================================================================
+<인라인 뷰>
+- 서브쿼리문에서 바깥쪽 select문의 from절 내부에 사용된 서브쿼리문.
+- 내부에 사용되는 서브쿼리는 별칭이 부여, 이렇게 부여된 별칭이 뷰처럼 사용.
+
+  select  ...
+  from  ... ,(select ...
+                         =====> 인라인 뷰
+              ) Alias
+  .....;
+  
+<Top-N 구하기>
+ rowid: 주소로서 row가 실제로 저장되어있는 공간을 표시.
+ rownum: 번호로서 row의 주소 순서대로 출력되어짐.    
+         출력되는 행에 대해 첫행부터 순차적인 번호를 부여(1,2,3,.....)         
+      
+select empno, ename, sal, rownum
+from emp;
+
+     EMPNO ENAME                       SAL     ROWNUM
+---------- -------------------- ---------- ----------
+      7369 SMITH                       800          1
+      7499 ALLEN                      1600          2
+      7521 WARD                       1250          3
+      7566 JONES                      2975          4
+      7654 MARTIN                     1250          5
+      7698 BLAKE                      2850          6
+      7782 CLARK                      2450          7
+      7788 SCOTT                      3000          8
+      7839 KING                       5000          9
+      7844 TURNER                     1500         10
+      7876 ADAMS                      1100         11
+
+문제) 가장 급여를 많이 받는 3명의 사원정보(사원번호, 사원명, 급여)를 출력하시오.
+    ---> rownum 사용
+    
+    select empno, ename, sal
+    from emp
+    order by sal desc;
+
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7839 KING                       5000  
+      7902 FORD                       3000
+      7788 SCOTT                      3000
+      7566 JONES                      2975
+      7698 BLAKE                      2850
+      7782 CLARK                      2450
+      7499 ALLEN                      1600
+      7844 TURNER                     1500
+      7934 MILLER                     1300
+      7521 WARD                       1250
+      7654 MARTIN                     1250
+
+    select empno, ename, sal
+    from emp
+    where rownum between 1 and 3  -- rownum >= 1 and rownum <= 3
+    order by sal desc;
+
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7499 ALLEN                      1600
+      7521 WARD                       1250
+      7369 SMITH                       800
+
+     ===> 예상치 못한 결과!!
+                     왜? order by(정렬) 전에 where절을 먼저 실행하기 때문!!
+                ---> where절 실행 후 order by절을 실행!!
+                
+          해결) 정렬(order by)실행 후  조건(where rownum)실행!!                
+                
+      select empno, ename, sal
+      from  (select empno, ename, sal
+             from emp
+             order by sal desc)                
+      where  rownum between 1 and 3;               
+                
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7839 KING                       5000
+      7902 FORD                       3000
+      7788 SCOTT                      3000           
+      
+문제) 가장 오래된(오래 근무한) 사원 3명의 사원번호, 사원명, 입사일을 출력하시오.                 
+   <정답> SMITH, ALLEN, WARD
+   
+      select empno, ename, hiredate
+      from  (select empno, ename, hiredate
+             from emp
+             order by hiredate asc)                
+      where  rownum between 1 and 3;
+
+     EMPNO ENAME                HIREDATE
+---------- -------------------- --------
+      7369 SMITH                80/12/17
+      7499 ALLEN                81/02/20
+      7521 WARD                 81/02/22
+      
+문제) 급여를 4번째로 많이 받는 사원부터 6번째까지의 사원의 정보(사원번호,사원명,급여)를 출력하시오.
+   <정답> JONES(2975),BLAKE(2850),CLARK(2450)
+   
+   select empno, ename, sal
+      from  (select empno, ename, sal
+             from emp
+             order by sal desc)                
+      where  rownum between 4 and 6;
+    ----> 결과행 없음!!
+              ----> 이유) rownum은  항상 1부터 카운트를 해야 함!!
+              ----> 해결) rownum을 먼저 1부터 출력하고 그 결과에서 [출력한 결과에서!!]
+                                                                            중간번호(1이 아닌 번호)를 조회하자!!
+    select empno, ename, sal --,rownum  ra                                                                            
+    from (select empno, ename, sal, rownum rb
+          from  ( select empno, ename, sal ,rownum rc
+                  from emp
+                  order by sal desc  
+                 ) -- 1차: 정렬
+          ) -- 2차: 출력된 행에 1부터 순차적인 수를 부여(rownum rb)!!               
+    where  rb between 4 and 6;   --3차: rb는 1~14 출력된 번호!!                                                                      
+                                                                            
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7566 JONES                      2975
+      7698 BLAKE                      2850
+      7782 CLARK                      2450                                                                          
+                                                                            
+
+
+
+      
+
+
+
+      
+      

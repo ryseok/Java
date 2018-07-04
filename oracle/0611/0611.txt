@@ -1,0 +1,626 @@
+
+
+
+<PL/SQL>
+  declare --선언부
+        실행부에서 사용하는 변수에 대한 선언!!
+     a     number(4);
+     ename emp.ename%type;
+     c     number(7,2);
+             99999.99     (O)   
+             99999.9923   (O)   
+             99999.9998   (X)   
+             99998.9998   (O)   
+     
+     
+  ------------------------------------------
+  begin   --실행부
+     SQL문1 작성
+     SQL문2 작성
+     SQL문3(DQL,DML) 작성
+            주의: select empno, ename, sal into a, ename, c
+                                                컬럼명                          변수명
+            from emp;
+      ===> into절의   사용목적: 조회된 결과(데이터)를 실행부 내에서 사용하기 위해서!!
+      
+      dbms_output.put_line(empno); X
+      dbms_output.put_line(a);     O
+    if(조건식)  
+      then SQL문4;  ---> 0,1 번 실행
+    end if;
+    
+    for(){
+      SQL문5;  ---> 0~무한대 실행 
+    }
+          
+  end;
+  /
+  
+---------------------------------------------------------------------  
+<조건문>
+1. if문
+  형식)
+      if (조건식)
+        then
+                실행할 문장
+      end if;
+      
+2. if~else문
+  형식)
+     if (조건식)
+        then 조건식 참일때 실행할 문장;
+        else 조건식 거짓일때 실행할 문장;
+     end if;     
+
+3. if~elsif~else문
+  형식)
+     if (조건식1)
+        then 조건식1 참일 때 실행할 문장;
+        elsif (조건식2)
+          then 조건식1이 거짓이고 조건식2 참일 때 실행할 문장;  
+        elsif (조건식3)
+          then 조건식1,2가 거짓이고 조건식3 참일 때 실행할 문장;  
+        else 조건식1,2,3 이 거짓일때 실행할 문장;
+     end if;  
+
+
+문제) 특정사원의 사원번호, 사원명, 소속된 부서명을 출력하시오.
+   예: 사번7788은 SCOTT사원이고 RESEARCH부서에 근무합니다.
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+   ---> if_elsif_test.sql  
+
+문제) 특정사원 한명의 사원번호, 사원명, 연봉을 출력하시오.
+     (연봉계산은 급여*12+COMM)
+     
+    ===> where empno=7788;     where empno=7654;  
+    ===> 예) 사번 7788은 SCOTT사원이고 연봉은 36000입니다.
+
+   ---> emp_sal.sql     
+     
+<반복문>
+1. loop(반복문)
+    형식) 
+    LOOP
+              반복실행할 문장1;
+              반복실행할 문장2;
+              반복실행할 문장3;
+      EXIT [WHEN 조건식];    
+    END LOOP; 
+    
+문제) 1부터 10까지 출력하시오.
+ ---> loop_test.sql    
+     
+    
+2. for loop
+  형식) 
+    
+    FOR 변수 IN [reverse] 최소값..최대값
+    LOOP
+           반복 실행할 문장;
+    END LOOP;      
+    
+문제) 화면에 '나는 SQL이 좋아요!!'를 10번 출력하시오.
+    ---> for_test.sql    
+    
+문제) 3단에서 5단까지 출력하시오.
+    ---> for_dan.sql
+    
+   <3단>
+   3*1=3
+   ...
+   3*9=27
+   <4단>
+   4*1=4
+   ...
+   4*9=36
+   <5단>
+   5*1=5
+   ...
+   5*9=45        
+   
+문제) 위의 구구단 결과를 gugudan 테이블에 저장!!
+
+   create table gugudan
+   (
+      dan     number(2),
+      i       number,
+      result  number
+   );
+    
+3. while loop
+   형식)
+     WHILE 조건식
+     LOOP      
+                반복실행할 문장;      
+     END LOOP;
+     
+======================================================================
+<저장프로시저>★ Stored Procedure
+- 자주 사용되는 DML,DQL을 모듈화 시켜서 DB에 저장하였다가
+  필요할 때 호출해서 사용!!
+- JAVA의 메소드와 같음
+
+형식)
+  CREATE [OR REPLACE] PROCEDURE 프로시저명(변수명1 [IN|OUT] 자료형, 변수명2 자료형)
+  IS   
+         변수선언
+  BEGIN
+        실행할 문장1;
+        실행할 문장2;
+        실행할 문장3;
+    --- 초기화, SQL문, 함수호출, 절차적요소(조건문,반복문)
+  END;
+  / 
+
+실행방법) EXECUTE 프로시저명();
+
+참고)
+    void hello(String name){
+       System.out.println("안녕,"+name);
+    }
+    -----> Stored Procedure (리턴 없고)
+    
+    String hi(){
+       return "좋은 하루~!!";
+    }
+    -----> Stored Function (리터 있고)
+ 
+문제) 부서테이블(dept3)에서 40번 부서를 삭제하시오. (프로시저 사용)
+  ---> pro_test.sql
+
+  drop table dept3;
+  create table dept3
+  as select * from dept;      
+    
+SQL> select * from dept3;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+        
+SQL> @0611/pro_test
+Procedure created. ==> 프로시저를 DB에 저장!!
+                      (delete 실행 안됨!!)
+                      
+SQL> execute del_dept()
+#40번 부서를 삭제하였습니다!!                                 
+
+SQL> exec del_dept
+#40번 부서를 삭제하였습니다!!
+
+SQL> exec del_dept(40)
+#40번 부서를 삭제하였습니다!!
+
+SQL> exec del_dept(20)
+#20번 부서를 삭제하였습니다!!
+
+SQL> select * from dept3;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        30 SALES                        CHICAGO
+
+SQL> variable tom varchar2(15); 
+     -->프로시저를 호출 후 out매개변수의 값을 받기 위해 변수 선언!!
+
+SQL> exec del_dept(30, :tom); 
+     --> :변수명을 통해 전달 바인드 변수 정의!!     
+#30번 부서를 삭제하였습니다!!
+
+SQL> print tom   --> 저장된 데이터 확인!!
+TOM
+----------
+화요일
+
+
+문제) 사원테이블(emp3)에서 특정사원명을 입력을 통해 삭제하는 프로시저를 생성하시오.
+   drop table emp3;
+   create table emp3 as select empno,ename,sal from emp;
+   
+   ---> pro_test2.sql
+   ---> 프로시저명: del_ename
+   
+ 실행 ==> 1. 작성된 프로시저를 DB에 저장(생성)
+            @0611/pro_test2.sql
+        2. 저장된 프로시저 이름을 호출(실행!!)
+            exec[ute] del_ename('ADAMS');   
+
+SQL> @0611/pro_test2
+Warning: Procedure created with compilation errors.
+No errors.
+
+SQL> execute del_ename('ADAMS')
+ADAMS사원을 삭제했습니다!!
+
+SQL> execute del_ename('SMITH')
+SMITH사원을 삭제했습니다!!
+
+SQL> select count(*) from emp3;
+
+  COUNT(*)
+----------
+        12
+
+=================================================================
+<저장함수> Stored Function
+ - 실행(함수호출)후 결과를 되돌려 받은 수 있는
+   return 데이터; 를 반드시 명시해야 함!!
+   
+형식)
+   CREATE [OR REPLACE] FUNCTION 함수명(매개변수 선언)
+   RETURN 자료형
+   IS
+         변수선언
+   BEGIN
+         실행할 SQL문
+     .....
+     RETURN 데이터; 
+   END;
+   /
+   
+사용법)   
+   1. CREATE FUNCTION~  (함수를 DB에 저장)
+   2. VARIABLE 바인드변수명 자료형;              --변수선언
+   3. EXEC[UTE]  :바인드변수 := 함수명();  -- 결과값 저장
+   4. PRINT 바인드변수명;                 --저장값 확인
+
+문제) 특정 사원에게 보너스를 지급하려고 하는데 급여의 200%에 해당하는 비용을 지급하려 한다.
+    이 보너스 금액을 FUNCTION을 통해 구하시오.
+    
+  ---> fun_test.sql
+  ---> 함수명: call_bonus('SMITH'); 
+
+SQL> @0611/fun_test  
+Function created. --> 함수 저장
+
+SQL> variable bonus number  --> 바인드변수선언
+
+SQL> exec  :bonus := call_bonus('SMITH');
+PL/SQL procedure successfully completed. 
+   --> 함수호출 후 데이터 저장
+   
+SQL> print bonus   ---> 저장된 데이터 확인!!
+
+     BONUS
+----------
+      1600      
+
+===================================================================
+문제) 부서테이블(DEPT)에 정보를 모두(모든 행) 출력하시오.  ---> PL/SQL사용
+
+ declare
+    vdeptno number(2);
+    vdname  varchar2(15);
+    vloc    varchar2(15);
+    
+ begin
+    select deptno, dname, loc into vdeptno, vdname, vloc
+    from dept;
+    --where deptno=20;
+    
+    dbms_output.put_line('부서번호/부서명/부서위치');
+    dbms_output.put_line(vdeptno||' / '||vdname||' / '||vloc);
+ end;
+ /
+
+---> ORA-01422: exact fetch returns more than requested number of rows
+---> 실제 인출은 요구된 것 보다 많은 수의 행을 추출 합니다!!
+---> 조회(select)결과가 2개 이상일 때 에러 발생!!
+        ----> 해결) Cursor사용!!  또는  loop사용
+
+<커서> Cursor
+- select의 결과가 2개행 이상일 때 명시적으로 사용.
+   형식)
+    declare
+       -- 변수선언, 커서정의
+       CURSOR 커서명 IS select문장;
+    begin
+       --커서 사용
+       OPEN 커서명;
+       FETCH 커서명 INTO 변수명;  -- 데이터 1행 인출
+       CLOSE 커서명;
+    end;
+    /
+
+-------------------------------------------------------
+ declare
+     
+    CURSOR cur is select deptno, dname, loc from dept;
+    vdept dept%rowtype; -- %rowtype(테이블타입- 테이블을 구성하는 모든 컬럼!!)
+    
+ begin
+    OPEN cur;    
+    dbms_output.put_line('부서번호/부서명/부서위치');    
+    loop
+      FETCH cur into vdept; -- vdept: deptno, dname, loc (== dept테이블!!)
+        exit when cur%notfound; -- 커서를 통해 인출된 행이 없다면
+      dbms_output.put_line(vdept.deptno||' / '||
+                           vdept.dname||' / ' ||vdept.loc);
+    end loop;  
+    CLOSE cur;   
+ end;
+ /
+
+---------------------------------------------------------------------
+문제) 특정 부서에 있는 사원의 사원번호, 사원명, 급여, 입사일을 출력하는 프로시저를 작성하시오.
+ ----> 프로시저명: dept_member(부서번호)
+ 
+ create or replace procedure dept_member(vdeptno emp.deptno%type)
+ is
+   --변수선언, 커서정의
+   CURSOR cur
+   is
+   select empno, ename, sal, to_char(hiredate,'yyyy"년 "mm"월 "dd"일"') hiredate
+   from emp
+   where deptno=vdeptno;
+   
+   cnt number := 0;
+   cnt2 number;
+   
+ begin
+   dbms_output.put_line('==========<'||vdeptno||'번부서>=============');
+   dbms_output.put_line('사원번호 / 사원명 / 급여 / 입사일');
+   dbms_output.put_line('---------------------------------');
+   
+   --커서에 for문을 적용 : open, close 생략하는 것이 가능!!
+   --for 변수명 in 최소값..최대값    ===> for i in 1..10
+   --for 변수명 in 커서명 
+   for   vemp in cur -- 자동 open, fetch , close  
+   loop
+      dbms_output.put_line(vemp.empno ||'  / '|| vemp.ename ||' / '||
+                      vemp.sal ||' / '|| vemp.hiredate);
+      cnt  := cnt + 1;                                   
+   end loop;
+   
+   dbms_output.put_line('---------------------------- 사원수: '||cnt||'명');
+      
+   select count(*) into cnt2
+   from emp
+   where deptno=vdeptno;
+   
+   dbms_output.put_line('---------------------------- 사원수: '||cnt2||'명');
+ end;
+ /
+
+SQL> exec dept_member(10);
+==========<10번부서>=============
+사원번호 / 사원명 / 급여 / 입사일
+---------------------------------
+7782  / CLARK / 2450 / 1981년 06월 09일
+7839  / KING / 5000 / 1981년 11월 17일
+7934  / MILLER / 1300 / 1982년 01월 23일 
+---------------------------- 사원수: 3명 
+---------------------------- 사원수: 3명 
+ 
+============================================================ 
+<패키지>
+- 동일한 프로시저명 또는 함수명을 구분
+  (NameSpace개념)
+  
+--------------------패키지 선언--------------------------- 
+ create or replace package 패키지명
+ is
+   정의될 저장프로시저와 저장함수
+ end;
+ /
+--------------------패키지 실행(body)--------------------------- 
+ create or replace package body 패키지명
+ is
+   저장프로시저와 저장함수 정의
+ end;
+ /
+ 
+실행)  EXEC[UTE] 패키지명.저장프로시저명
+   
+--------------------패키지 선언--------------------------- 
+ create or replace package encore
+ is
+     procedure del_dept(delNo number);
+     function call_bonus(vename emp.ename%type) return number;
+ end;
+ /
+ ---> Package created.
+ 
+--------------------패키지 실행(body)--------------------------- 
+ create or replace package body encore
+ is
+    --특정부서 삭제 프로시저
+    procedure del_dept(delNo in number)
+		is
+		begin		  
+		  delete from dept3
+		  where deptno=delNo;
+		  dbms_output.put_line('#'||delNo||'번 부서를 삭제하였습니다!!');
+		end;
+    --특정사원의 보너스 얻는 함수
+    function call_bonus(vename emp.ename%type)  
+	return number
+	is
+	  --변수선언
+	  vsal emp.sal%type;
+	  bonus number;
+	begin
+		dbms_output.put_line('함수안녕~!!');
+		select sal  into vsal
+		from emp
+		where  ename=vename;
+		
+		-- 보너스 계산
+		bonus := vsal*2;
+		
+		return bonus;
+    end;		
+ end;
+ / 
+
+===> Package body created. 
+ 
+exec  encore.del_dept(10);
+
+variable b number;
+exec  :b := encore.call_bonus('SMITH');
+ 
+SQL> print b
+
+         B
+----------
+      1600 
+  
+=================================================================
+<트리거> Trigger
+- 이벤트 처리 (~했을때 수반되는 처리)
+- 특정테이블에 이벤트(insert,delete,update)가 발생했을 시
+  다른 테이블에 연관된 내용을 변경하도록 하는 일.
+  
+형식)
+  CREATE [or replace] TRIGGER 트리거명
+  (BEFORE|AFTER) (INSERT | DELETE | UPDATE) --이벤트 (사건발생)
+  ON 테이블명           -- 이벤트가 발생하는 테이블
+  [FOR EACH ROW] -- 실행될 문장 행에 각각 적용
+  [WHEN 조건식]
+  BEGIN
+     -- 이벤트 발생시 실행할 문장(주로 DML문장)  ===> 이벤트 핸들러!!
+  END;
+  
+문제) 사원테이블(EMP2)에 사원정보가 새로 입력될 때 마다 입사 환영메시지를 출력하시오.
+                            -----------    ----------------
+                                                      이벤트!!          이벤트처리(begin~end)
+                                                      
+   drop table emp2;
+   create table emp2
+   as select empno,ename,deptno
+      from emp
+      where 1=0;
+      
+   -- 환영 트리거 생성!!
+   create or replace trigger welcome
+   after insert on emp2 -- emp2테이블에 행입력이 발생했다면!!(발생한 후)
+   for each row
+   begin
+      dbms_output.put_line('ENCORE주식회사 입사를 환영합니다^^*!!');
+   end;
+   /    
+   ===> 트리거  생성 성공!!
+                                                          
+SQL> insert into emp2 values (7000,'진형',10);
+ENCORE주식회사 입사를 환영합니다^^*!!
+
+SQL> insert into emp2 values (7002,'진환',10);
+ENCORE주식회사 입사를 환영합니다^^*!!
+
+SQL> insert into emp2 values (7004,'성훈',10);
+ENCORE주식회사 입사를 환영합니다^^*!!
+
+<바인드변수> - 매개변수, 전달변수, PL/SQL에서는 변수명 앞에 ':'을 붙여서 사용
+  :new - 새로 입력(insert,update)된 데이터
+  :old - 기존 데이터
+  
+ ==> begin~end에서 사용법) :new.컬럼명    :old.컬럼명  
+
+   -- 환영 트리거 생성!!
+   create or replace trigger welcome
+   after insert on emp2 -- emp2테이블에 행입력이 발생했다면!!(발생한 후)
+   for each row
+   begin
+      dbms_output.put_line(:new.ename||'님의 ENCORE주식회사 입사를 환영합니다^^*!!');
+   end;
+   /
+
+SQL> insert into emp2 values (7006,'예린',20);
+예린님의 ENCORE주식회사 입사를 환영합니다^^*!!
+
+SQL> insert into emp2 values (7008,'지환',20);
+지환님의 ENCORE주식회사 입사를 환영합니다^^*!!
+
+SQL> insert into emp2 values (7010,'승환',20);
+승환님의 ENCORE주식회사 입사를 환영합니다^^*!!
+  
+------------------------------------------------------------------  
+문제) 사원테이블(emp3)에 사원정보가(empno,ename,sal,hiredate) 입력되었을때
+   급여테이블(salary[no,sal])에 그 사원에 대한 급여 정보가 자동으로 입력되도록 트리거를 생성하시오.
+   
+  drop table emp3;
+  create table emp3
+  as select empno,ename,sal,hiredate
+     from emp
+     where 1=0;
+     
+  create table salary
+  (
+     no number,
+     sal number(7,2)
+  );     
+
+SQL> select * from salary;
+no rows selected     
+
+create sequence salary_seq
+              start with 1
+              increment by 1
+              nocycle
+              nocache;
+
+<트리거 생성> - 사원테이블에 입력된 정보 중 sal정보만 모아서 salary테이블에 입력!!
+
+  create or replace trigger sal_info     
+  after insert on emp3 -- 사건발생
+  for each row
+  begin
+     -- 사건발생시 할일(보통 사건발생한 테이블과 다른 테이블에 대한 DML)!!
+     insert into salary (no, sal)
+                 values ( salary_seq.nextval , :new.sal);
+  end;
+  /   
+          
+  insert into emp3 values (8000, '용빈', 3000, sysdate);
+  insert into emp3 values (8001, '우영', 4000, sysdate);
+  insert into emp3 values (8002, '영석', 5000, sysdate);
+  insert into emp3 values (8003, '형진', 6000, sysdate);
+                                                        
+SQL> select * from salary;
+
+        NO        SAL
+---------- ----------
+         1       3000
+         2       4000
+         3       5000
+         4       6000
+
+
+
+
+
+
+   
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+     
+         

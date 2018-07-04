@@ -1,0 +1,30 @@
+
+
+
+※ NullPointerException 발생원인!!
+  ===> 메모리 할당을 하지않은 상태에서 메소드 또는 필드를 참조했을때 발생하는 에러!!
+  ===> null.필드명   null.메소드명();  발생
+
+  class A{
+     void hello(){}
+  }
+  
+  class Test{
+     A a;// A a = null;  ===> null: 메모리가 할당되지 않았음!!
+     
+     void print(){
+        a.hello(); ====> null.hello(); !!  ====>  NullPointerException 발생
+        
+        a = new A(); <====메모리 할당
+        a.hello(); ^O^
+     }
+       
+     public static void main(String []args){
+      Test t = new Test();
+        t.print();
+     }  
+  }
+
+
+
+  

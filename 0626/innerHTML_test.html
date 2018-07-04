@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>innerHTML테스트</title>
+  <script type="text/javascript">
+    function clearBody(){
+    	//문서내의 특정 엘리먼트 얻어오기
+      //Element body = document.getElementById('body');
+      var body = document.getElementById('body');
+      var htmlStr=body.innerHTML;
+       //★ element객체.innerHTML속성명!!
+       //alert(htmlStr);
+       body.innerHTML='';
+    }//clearBody
+    
+    function changeP(){
+       	var p1 = document.getElementById('p1');
+       	//p1의 자료형: Element  ---> 속성 innerHTML
+       	p1.innerHTML = 
+       '<font size=10 color=red>즐거운 화요일~!!</font>';
+       	
+    }//changeP
+    
+    var names=['홍길동','길라임','김주원','김유신'];
+    var idx=0;
+    function addButton(){
+       var b = document.createElement("button"); //<button></button>
+       //b ==> Element객체!!
+       //b.innerHTML = '홍길동'//<button>홍길동</button>
+       b.innerHTML= names[idx];
+       idx++;
+       if(idx==4){idx=0;}
+       
+       //var d1 = document.getElementById("d1");
+       d1.appendChild(b);//부모엘리먼트.appendChild(자식요소);
+       
+      
+    }//addButton
+    
+  </script>
+</head>
+<!-- innerHTML_test.html -->
+<body id="body">
+  <pre>
+     동해물과 백두산이
+         마르고 닳도록
+             만세만세만세
+  </pre>
+  <img src="../image/mars.jpg"
+       width="200" height="200">
+  <br><br>
+  <button onclick="clearBody()">바디(내용)지우기</button>
+  <p id="p1"><b>자바스크립트</b></p>
+  <button onclick="changeP()">클릭!!</button>
+  <br><br>
+  <button onclick="addButton()">버튼생성</button>
+  <div id="d1"></div>       
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

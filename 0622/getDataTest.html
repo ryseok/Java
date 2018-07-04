@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>데이터얻기 테스트</title>
+  <script type="text/javascript">
+     //함수정의
+    function printData(){
+      //폼내의 데이터 얻기 ===> document.폼이름.설정이름.value 	 
+   
+      //document.frm.uname.value = '홍홍홍'; //setValue의 의미
+      var name = document.frm.uname.value ; //getValue의 의미
+      var pass = document.frm.pass.value;
+      var hide = document.frm.hide.value;
+      
+      //var apple = document.frm.apple.value; //type=checkbox 의 경우 'on' 얻기 
+                                             //value를 정의한 경우 value값 얻기
+                     
+      var f = document.frm;//f: <form>엘리먼트 객체!!                                             
+                                             
+     //alert(document.frm.apple.checked); //체크된 상태: true
+      /* 
+      var fruit='';
+      if(document.frm.apple.checked){//사과 v체크 되었다면
+    	 fruit += '사과 '; //fruit = fruit+'사과';  
+      }
+      if(f.straw.checked){
+    	  fruit += '딸기 ';
+      }
+      if(f.banana.checked){
+    	  fruit += '바나나';
+      } 
+      */
+      
+      //f.apple  ===> 데이터 타입? <input>엘리먼트!!
+      //f.fruit  ===> 데이터 타입? <input>엘리먼트들 ==> Array!!
+      //f.fruit[0]  == <input name=apple>
+      
+      var fruitNames='';
+      for(var i=0; i<f.fruit.length; i++){
+    	 if(f.fruit[i].checked){
+    		 fruitNames += f.fruit[i].value + ' ';
+    	 }  
+      }
+      
+      //f.room ----> Array!!
+      var roomName;
+      for(var i=0; i<f.room.length; i++){
+    	  if(f.room[i].checked){
+    		  roomName = f.room[i].value;
+    		  break;
+    	  }
+      }
+      
+      var menu = f.menu.value;
+      var memo = f.memo.value;
+      
+      alert("이름▶"+ name + "\n비번▶"+pass+ "\n히든▶" + hide+
+    		 "\n좋아하는 과일▶"+ fruitNames+
+    		 "\n강의실▶"+ roomName +"\n점심메뉴▶"+ menu+"\n메모▶"+ memo);
+    } 
+  </script>
+</head>
+<!-- getDataTest.html -->
+<body>
+  <h3>데이터값 얻어오기</h3>
+  <hr>
+  <form name="frm">
+        이름: <input type="text" name="uname" value="기본값"> <br> 
+        비번: <input type="password" name="pass"> <br>
+        히든: <input type="hidden" name="hide" value="하이드와지킬박사"> <br>
+        좋아하는 과일:
+       <!-- 
+       <input type="checkbox" name="apple" value="풋사과">사과         
+       <input type="checkbox" name='straw'>딸기      
+       <input type="checkbox" name="banana">바나나       <br>  
+       --> 
+       <input type="checkbox" name="fruit" value="풋사과">사과         
+       <input type="checkbox" name='fruit' value="딸기">딸기      
+       <input type="checkbox" name="fruit" value="바나나">바나나       <br>  
+        강의실:
+       <input type="radio" name="room" value="1강의실" checked>1강의실       
+       <input type="radio" name="room" value="2강의실">2강의실       
+       <input type="radio" name="room" value="3강의실">3강의실       
+       <input type="radio" name="room" value="4강의실">4강의실 <br>
+        점심메뉴:
+       <select name="menu">
+          <option value="김치찌게">한식</option>
+          <option value="꿔바로우">중식</option>
+          <option value="초밥">일식</option>
+       </select><br>
+         메모:
+       <textarea rows="5" cols="30" name="memo">기본text!!</textarea>
+       
+    <input type="button" value="입력내용출력" onclick="printData()">
+  </form>
+
+</body>
+</html>
+

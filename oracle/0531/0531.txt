@@ -1,0 +1,636 @@
+
+
+
+
+
+<SQL> Structured Query Language
+1. DML(Data Manipulation Language)
+   - 데이터: 행단위 데이터!!
+   - insert(데이터 최초입력) , delete, update(데이터 재입력)
+
+2. DQL(Query검색)
+   - 데이터: 행열 데이터!!
+   - select
+   
+     형식)
+      select  distinct (조회)컬럼명 [as] 별명, 함수호출 별명, 데이터
+      from 테이블명
+      where 조건식 =====> (기준)컬럼명     연산자      비교데이터
+                             ename    =     'SCOTT'
+                                      
+                                                                 비교연산자(>,<,>=,<=,=,  != ^= <>) 
+                                      in    (1,2,3,4) 
+                                      like   '패턴%_'
+                                      between  최소값  and 최대값   :최소값이상 ~ 최대값 이하
+                                      
+                                                      컬럼명        IS     null  ==>  컬럼의 값이 null과 같다면!! 
+                                                      컬럼명        IS  not null  ==>  컬럼의 값이 null이 아니라면!!
+                                                         (컬럼의 값이 정해져 있다면) 
+       order by (정렬)컬럼명 [asc|desc];
+       
+<함수>
+   nvl(컬럼명, 대체데이터)
+       컬럼: null이 예상되는 컬럼
+       
+   nvl(ename, '무명')  : character
+   nvl(comm, 0)       : number
+   
+- 숫자 : round(), floor(), trunc(), mod(피젯수, 젯수)
+- 문자 : upper(), lower(), initcap(), length, lengthb, instr(), substr()
+- 날짜  : sysdate,  sysdate+1, months_between(), add_months(), next_day('수'), last_day()
+                 
+      
+
+3. DDL(Definition 정의)
+   - 데이터: 객체(table, view, sequence, trigger)   
+   - create, drop, alter, rename, truncate
+
+4. DCL
+   - 데이터: 권한
+   - grant, revoke
+   
+5. TCL
+   - 트랜잭션: DML작업들의 논리적인 묶음 단위
+   - commit, rollback, savepoint
+
+==============================================================================
+<논리연산자>
+AND : 두조건 모두 만족하는 검색.
+
+※ 주의
+  int a=3, b=5, c=7, d=9;
+  if(a>b && c<d){
+    System.out.println("안녕");
+  }
+  -----> c<d 비교연산을 할까? 정답: 안한다 
+  -----> 이유: java는 앞에서부터 조건식을 검사하기 때문!!
+
+  a,b,c,d  : 컬럼(number)
+  where  a>b  AND  c<d
+  
+  -----> c<d 비교연산을 할까? 정답: 한다!!
+  -----> 이유: sql에서는 뒤에서부터 조건식을 검사하기 때문!!
+  
+문제) 10번 부서에 근무하고 직책이 CLERK인 사원의 사원번호, 사원명, 부서번호, 직책출력.
+   select empno, ename, deptno, job -- 열 제어
+   from emp
+   where  job = 'CLERK' AND  deptno = 10; -- 행 제어
+
+     EMPNO ENAME                    DEPTNO JOB
+---------- -------------------- ---------- ------------------
+      7934 MILLER                       10 CLERK
+
+<OR연산자>
+- 둘 중 하나라도 만족하는 행을 검색.
+
+문제) 10번 부서에 근무하거나
+       또는 직책이 CLERK인 사원의 사원번호, 사원명, 부서번호, 직책 출력.
+       
+   select empno, ename, deptno, job    
+   from emp
+   where deptno=10 or job='CLERK';
+
+     EMPNO ENAME                    DEPTNO JOB
+---------- -------------------- ---------- ------------------
+      7369 SMITH                        20 CLERK
+      7782 CLARK                        10 MANAGER
+      7839 KING                         10 PRESIDENT
+      7876 ADAMS                        20 CLERK
+      7900 JAMES                        30 CLERK
+      7934 MILLER                       10 CLERK
+
+문제) 30번 부서에 근무하는 사원의 정보를 출력하시오.
+    (사원번호, 사원명, 부서번호, 직책)
+    
+   select empno, ename, deptno, job
+   from emp
+   where deptno=30; 
+
+<NOT 연산자>
+- 조건에 만족하지 못하는 행을 검색.
+- 위치: 조건식 앞에 사용.
+       in, like, between 앞에 사용.
+       null앞에 사용.
+
+
+문제) 30번 부서에 근무하지 않는 사원의 정보를 출력하시오.
+    (사원번호, 사원명, 부서번호, 직책)
+
+   select empno, ename, deptno, job
+   from emp
+   where  not deptno = 30; 
+
+     EMPNO ENAME                    DEPTNO JOB
+---------- -------------------- ---------- ------------------
+      7369 SMITH                        20 CLERK
+      7566 JONES                        20 MANAGER
+      7782 CLARK                        10 MANAGER
+      7788 SCOTT                        20 ANALYST
+      7839 KING                         10 PRESIDENT
+      7876 ADAMS                        20 CLERK
+      7902 FORD                         20 ANALYST
+      7934 MILLER                       10 CLERK
+
+문제) 이름에 'A'를 포함하지 않는 사원의 사원번호, 사원명, 부서번호를 출력.
+
+   select empno, ename, deptno
+   from emp
+   where  ename not like '%A%';
+       
+   select empno, ename, deptno
+   from emp
+   where   not (ename like '%A%');    
+
+     EMPNO ENAME                    DEPTNO
+---------- -------------------- ----------
+      7369 SMITH                        20
+      7566 JONES                        20
+      7788 SCOTT                        20
+      7839 KING                         10
+      7844 TURNER                       30
+      7902 FORD                         20
+      7934 MILLER                       10
+
+문제) 급여가 1600 이상이고 3000 이하인 사원의 사원번호, 사원명, 급여를 출력.
+     select empno, ename, sal
+     from emp
+     where sal between 1600 and 3000;
+
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7499 ALLEN                      1600
+      7566 JONES                      2975
+      7698 BLAKE                      2850
+      7782 CLARK                      2450
+      7788 SCOTT                      3000
+      7902 FORD                       3000
+
+문제) 급여가 1600 미만이고 3000 초과인 사원의 사원번호, 사원명, 급여를 출력.
+     select empno, ename, sal
+     from emp
+     where sal  not between 1600 and 3000;
+
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7369 SMITH                       800
+      7521 WARD                       1250
+      7654 MARTIN                     1250
+      7839 KING                       5000
+      7844 TURNER                     1500
+      7876 ADAMS                      1100
+      7900 JAMES                       950
+      7934 MILLER                     1300
+============================================================================
+<그룹함수> ★ 집계함수
+- 전체데이터를 그룹별로 구분하여 통계적인 결과를 구하기 위해 사용.
+- 결과값은 항상 단행!!
+- 그룹함수와 단순컬럼은 함께 사용하는 것이 불가능!!
+  (만약 그룹함수와 함께 사용하고자 하는 컬럼이 그룹으로 묶여 질 수 있다면
+   group by절과 함께 사용하는 것이 가능)
+- NULL은 결과값에서 제외
+
+종류)
+   SUM(총합), AVG(평균), COUNT(행갯수), MIN(최소값), MAX(최대값),
+   STDDEV(표준편차), VARIANCE(분산)
+형식)
+   그룹함수명(컬럼명)
+      
+문제) 사원들의 전체 급여 총합을 구하시오.      
+    select sum(sal)
+    from emp;
+
+  SUM(SAL)
+----------
+     29025
+     
+문제) 사원들의 평균 급여를 구하시오.     
+   select avg(sal)
+   from emp;
+
+  AVG(SAL)
+----------
+2073.21429
+
+문제) 가장 적게 받는 급여, 가장 많게 받는 급여를 출력하시오
+  select min(sal) 최소급여,  max(sal) "최대급여"
+  from emp;
+
+       최소급여        최대급여
+---------- ----------
+       800       5000
+
+문제) 부서번호와 급여평균을 출력하시오.
+  select deptno, avg(sal)
+  from emp;
+
+----> 에러발생 ORA-00937: not a single-group group function
+               ----> select절에는 단순컬럼과 함께 그룹함수 사용금지!!
+
+DQL 형식)
+    1. select 조회컬럼명
+    2. from 테이블명
+    3. where (전체행에 대한)조건식
+    4. group by (그룹을 묶을 수 있는 조건가진)컬럼명
+    5. having (그룹에 대한)조건식
+    6. order by 정렬컬럼명;
+
+   ★실행순서!! :  2-3-4-5-1(조회)-6
+                               - (출력)  
+  select deptno, avg(sal)
+  from emp
+  group by deptno;   -- 그룹함수와 컬럼이 매핑할 근거 마련
+
+    DEPTNO   AVG(SAL)
+---------- ----------
+        30 1566.66667
+        20       2175
+        10 2916.66667
+        
+   ====> 부서별 평균 급여
+
+문제1) 사원들의 직급종류는 몇 개(몇 행)인지 출력하시오.
+   select count(job)
+   from emp; 
+   ===> 14
+   
+   select count(distinct job)
+   from emp;
+   ===> 5
+
+문제2) 전체사원의 수(= 전체 행의 갯수)를 구하시오.
+   select count(ename)
+   from emp;
+   ---> 14
+   
+   select count(empno)
+   from emp;
+   ---> 14
+   
+   select count(mgr)
+   from emp;
+   ---> 13
+   
+   select count(comm)
+   from emp;
+   ---> 4
+   
+   select count(*) --전체 행을 구하고 싶을 때
+   from emp; 
+   ---> 14
+   
+문제3) 가장 오래 근무한 사원의 입사일을 구하시오.
+   select min(hiredate)
+   from emp;
+
+MIN(HIRE
+--------
+80/12/17
+
+   select to_char(min(hiredate), 'yyyy/mm/dd')  "오래된 입사일" 
+   from emp;
+
+오래된 입사일
+--------------------
+1980/12/17
+
+문제4) 부서별 평균 급여를 구하시오.(부서번호가 작은 부서부터 출력)
+   select avg(sal)
+   from emp; ----> 전체 사원의 평균 급여!!
+   
+   select avg(sal)
+   from emp
+   group by deptno;
+   
+  AVG(SAL)
+----------
+1566.66667
+      2175
+2916.66667   
+
+   select deptno, avg(sal)
+   from emp   
+   group by deptno
+   order by deptno;
+
+    DEPTNO   AVG(SAL)
+---------- ----------
+        10 2916.66667
+        20       2175
+        30 1566.66667
+
+
+
+문제5) 부서의 평균 급여가 2000 이상인 부서의 부서번호와 평균 급여를 출력하시오.
+  select deptno, avg(sal)
+  from emp
+  group by deptno
+  having  avg(sal) >= 2000;
+
+    DEPTNO   AVG(SAL)
+---------- ----------
+        20       2175
+        10 2916.66667
+
+문제6) 평균급여(==> 2073.21429)보다 더 많은 급여를 받는 사원의 사원번호, 사원명, 급여를 출력.
+  select empno, ename, sal
+  from emp
+  where sal > avg(sal) ;
+
+에러발생: ORA-00934: group function is not allowed here 
+           ====> where절에서는 그룹함수 사용이 불가!!
+
+   select empno, ename, sal
+  from emp
+  where sal > 2073.21429 ;
+  
+  select empno, ename, sal
+  from emp
+  where sal > (select avg(sal) from emp) ;
+  
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7566 JONES                      2975
+      7698 BLAKE                      2850
+      7782 CLARK                      2450
+      7788 SCOTT                      3000
+      7839 KING                       5000
+      7902 FORD                       3000  
+  
+문제7) 급여가 1000 이상인 사원들에 대해서만 부서별로 평균을 구하고
+      이 중에 평균 급여가 2000 이상인 부서의 부서번호와 평균급여를 출력하시오.
+      
+    select deptno, avg(sal)
+    from emp
+    where sal >= 1000
+    group by deptno;  
+      
+    DEPTNO   AVG(SAL)
+---------- ----------
+        30       1690
+        20    2518.75
+        10 2916.66667     
+        
+     ===> 첫번째 조건 적용(12명 사원)
+     
+    select deptno, avg(sal)
+    from emp
+    where sal >= 1000
+    group by deptno
+    having avg(sal) >= 2000; 
+              
+    DEPTNO   AVG(SAL)
+---------- ----------
+        20    2518.75
+        10 2916.66667
+        
+    ===> 두번째 조건(부서별 평균) 적용 (2개부서)
+    
+<DECODE함수>
+   형식)
+      DECODE(컬럼명,
+                                   비교데이터1, 결과데이터1,                  
+                                   비교데이터2, 결과데이터2,                  
+                                   비교데이터3, 결과데이터3.....)                  
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+
+문제) 사원들의 사원번호(empno), 사원명(ename), 부서번호(deptno), 부서명(dname)을 출력하시오.
+
+     select empno, ename, deptno, decode(deptno,
+                                                10,'ACCOUNTING',
+                                                20,'RESEARCH',
+                                                30,'SALES',
+                                                40,'OPERATIONS') 부서명
+     from emp;
+
+     EMPNO ENAME                    DEPTNO 부서명
+---------- -------------------- ---------- --------------------
+      7369 SMITH                        20 RESEARCH       홀수
+      7499 ALLEN                        30 SALES
+      7521 WARD                         30 SALES
+      7566 JONES                        20 RESEARCH       짝수
+      7654 MARTIN                       30 SALES
+      7698 BLAKE                        30 SALES
+      7782 CLARK                        10 ACCOUNTING
+      7788 SCOTT                        20 RESEARCH
+      7839 KING                         10 ACCOUNTING
+      7844 TURNER                       30 SALES
+      7876 ADAMS                        20 RESEARCH
+
+문제) 사원들의 사원번호(empno), 사원명(ename), 부서번호(deptno), 부서명(dname),
+        사원번호에 대한 홀수 또는 짝수를 출력하시오.
+
+    select empno, ename, deptno, decode(deptno,
+                                                10,'ACCOUNTING',
+                                                20,'RESEARCH',
+                                                30,'SALES',
+                                                40,'OPERATIONS') 부서명,
+                                 DECODE( MOD(EMPNO,2),
+                                                 0, '짝수',
+                                                 1, '홀수')  홀짝                      
+     from emp;
+
+<CASE함수>
+ 형식)
+     CASE WHEN 조건식1 THEN 결과데이터1
+          WHEN 조건식2 THEN 결과데이터2
+          WHEN 조건식3 THEN 결과데이터3
+          ELSE 결과데이터n          
+     END  
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+
+문제) 사원들의 사원번호(empno), 사원명(ename), 부서번호(deptno), 부서명(dname),
+        사원번호에 대한 홀수 또는 짝수를 출력하시오.
+   
+   select empno, ename, deptno,
+          case
+                when deptno=10 then 'ACCOUNTING'
+                when deptno=20 then 'RESEARCH'
+                when deptno=30 then 'SALES'
+                --when deptno=40 then 'OPERATIONS'
+                else 'OPERATIONS'
+          end "부서명",
+          case
+                when mod(empno,2) = 0 then '짝수사원번호'
+                else '홀수사원번호'
+          end "짝홀"               
+   from emp;                          
+                
+     EMPNO ENAME                    DEPTNO 부서명                              짝홀
+---------- -------------------- ---------- -------------------- ------------------------------------
+      7369 SMITH                        20 RESEARCH             홀수사원번호
+      7499 ALLEN                        30 SALES                홀수사원번호
+      7521 WARD                         30 SALES                홀수사원번호
+      7566 JONES                        20 RESEARCH             짝수사원번호
+      7654 MARTIN                       30 SALES                짝수사원번호
+      7698 BLAKE                        30 SALES                짝수사원번호
+      7782 CLARK                        10 ACCOUNTING           짝수사원번호
+      7788 SCOTT                        20 RESEARCH             짝수사원번호
+      7839 KING                         10 ACCOUNTING           홀수사원번호
+      7844 TURNER                       30 SALES                짝수사원번호
+      7876 ADAMS                        20 RESEARCH             짝수사원번호  
+      
+=============================================================================   
+<조인>★ JOIN
+- 한개 이상의 테이블에서 데이터를 조회하기 위해 사용.
+- 두개 이상의 테이블을 참조해서 데이터를 검색.
+- from 뒤에 두개 이상의 테이블을 명시.
+   예) from emp,dept
+     from emp,emp
+     
+문제) SCOTT사원이 근무하는 부서의 부서번호와 부서명, 부서위치를 출력하시오.     
+    1. 
+       select deptno
+       from emp
+       where ename='SCOTT';
+       ==> 20번 부서!!
+       
+    2. 
+       select deptno, dname, loc
+       from dept
+       where deptno=20;   
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        20 RESEARCH                     DALLAS
+
+      ===> SCOTT사원이 근무하는 부서명은 'RESEARCH'이고 'DALLAS'에 위치하고 있습니다.
+      
+     select ename, deptno, dname, loc
+     from emp , dept; 
+   ===> 에러: ORA-00918: column ambiguously defined (명시된 컬럼이 두개이상의 테이블에 존재할때)
+    
+     select ename, emp.deptno, dname, loc
+     from emp , dept; 
+   ===> 결과행: 56행
+         ---> 특정한 조건을 주지 않는다면 조인시 각 테이블이 갖는 행의 수를 곱한 형태의 결과가 출력.
+         
+     select ename, emp.deptno, dname, loc
+     from emp , dept
+     where emp.deptno = dept.deptno;    
+     ===> 결과행: 14행 (공통된 컬럼을 조건식에 대입한 결과)
+         
+ENAME                    DEPTNO DNAME                        LOC
+-------------------- ---------- ---------------------------- --------------------------
+CLARK                        10 ACCOUNTING                   NEW YORK
+KING                         10 ACCOUNTING                   NEW YORK
+MILLER                       10 ACCOUNTING                   NEW YORK
+JONES                        20 RESEARCH                     DALLAS
+FORD                         20 RESEARCH                     DALLAS
+ADAMS                        20 RESEARCH                     DALLAS
+SMITH                        20 RESEARCH                     DALLAS
+SCOTT                        20 RESEARCH                     DALLAS
+WARD                         30 SALES                        CHICAGO
+TURNER                       30 SALES                        CHICAGO
+
+문제) SCOTT사원의 부서번호와 부서명, 부서위치를 출력하시오.
+     (예: SCOTT사원은 20번 부서에 근무하고 부서명은 RESEARCH이고 위치는 DALLAS입니다.);
+
+    select ename, emp.deptno, dname, loc
+    from emp, dept
+    where ename='SCOTT' and  emp.deptno = dept.deptno;
+    
+ENAME                    DEPTNO DNAME                        LOC
+-------------------- ---------- ---------------------------- --------------------------
+SCOTT                        20 RESEARCH                     DALLAS
+   
+    select ename||'사원은 '||emp.deptno||'번 부서에 근무하고 부서명은 '||
+           dname||'이고 위치는 '||loc||'입니다.'
+    from emp, dept
+    where ename='SCOTT' and  emp.deptno = dept.deptno;
+
+    ===> SCOTT사원은 20번 부서에 근무하고 부서명은 RESEARCH이고 위치는 DALLAS입니다.
+ 
+<EQUI JOIN>
+- 조인 대상이 되는 두 테이블에서 공통적으로 존재하는 컬럼의 값이
+   일치하는 행을 연결하여 결과를 생성하는 조인.
+   
+※ 참고: select * from emp,dept;
+  ===> 특별한 조건없이 두 테이블을 곱(14행 * 4행)의 형태로 출력: CROSS JOIN
+  
+문제) 'NEW YORK'에 근무하는 사원의 이름과 급여를 출력하시오.  
+  select ename, sal
+  from emp e, dept d
+  where loc='NEW YORK'
+        and e.deptno = d.deptno;
+
+ENAME                       SAL
+-------------------- ----------
+CLARK                      2450
+KING                       5000
+MILLER                     1300
+
+문제) ACCOUNTING부서 소속 사원들의 이름과 입사일(YYYY/MM/DD)을 출력하시오.
+    select ename, to_char(hiredate, 'YYYY/MM/DD') 입사일
+    from emp e, dept d
+    where dname='ACCOUNTING'
+          and e.deptno = d.deptno;
+
+ENAME                입사일
+-------------------- --------------------
+CLARK                1981/06/09
+KING                 1981/11/17
+MILLER               1982/01/23
+
+문제) 직급이 MANAGER인 사원의 이름, 부서명을 출력하시오.
+   select ename, dname
+   from emp, dept
+   where  job='MANAGER'
+          and emp.deptno = dept.deptno;
+
+ENAME                DNAME
+-------------------- ----------------------------
+CLARK                ACCOUNTING
+JONES                RESEARCH
+BLAKE                SALES  
+       
+<Non-Equi JOIN>
+- 특정 범위내에 있는 값을 조회하기 위해 비교연산자를 사용.   
+   
+문제) 각 사원의 사원번호, 사원명, 급여, 급여 등급을 출력하시오.
+  select empno, ename, sal, grade
+  from emp, salgrade
+  where sal >= losal   and   sal <= hisal;
+     
+  select empno, ename, sal, grade
+  from emp, salgrade
+  where sal between losal and hisal;   
+
+      EMPNO ENAME                       SAL      GRADE
+---------- -------------------- ---------- ----------
+      7369 SMITH                       800          1
+      7900 JAMES                       950          1
+      7876 ADAMS                      1100          1
+      7521 WARD                       1250          2
+      7654 MARTIN                     1250          2
+      7934 MILLER                     1300          2
+      7844 TURNER                     1500          3
+      7499 ALLEN                      1600          3
+
+문제) ALLEN사원의 사원번호, 사원명, 급여, 급여등급을 출력하시오.
+  select empno, ename, sal, grade
+  from emp, salgrade
+  where ename='ALLEN' and sal between losal and hisal; 
+
+     EMPNO ENAME                       SAL      GRADE
+---------- -------------------- ---------- ----------
+      7499 ALLEN                      1600          3
+
+
+   
+   
+   
+
+
+

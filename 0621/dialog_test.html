@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>대화상자테스트</title>
+</head>
+<!-- dialog_test.html -->
+<body>
+ <h3>대화상자테스트</h3>
+ <script type="text/javascript">
+   //메시지 대화상자
+   //alert('전\t달\n\n메시지'); //<=== 공백 이스케이프가 적용됨!!   \n \t
+   
+   a=10;
+   b=20;
+   
+   //alert('a+b='+(a+b));
+   
+   
+   //확인 대화상자 ==> 삭제전 '확인'에서 많이 사용
+   //alert(confirm());//확인,취소,X버튼  ===> true, false, false
+   /*
+   if(confirm('정말 탈퇴하시겠습니까?')){
+	   alert('그동안 이용해 주셔서 감사합니다.\n좋은 서비스로 다시 뵙겠습니다^^*');
+   }else{
+	   alert('탈퇴취소되었습니다~!!');
+   }
+   */
+      
+   //입력 대화상자 (잘 사용하지 않음)
+   //alert(prompt());//확인,취소,X 버튼 ===> 입력문자열 또는 빈문자열,  null, null
+   //prompt('출력할 메시지'); prompt('출력할 메시지','텍스트필드의 기본text'); 
+   var fruit = prompt('좋아하는 과일은?', '');
+   
+   if(fruit != null){//취소 또는 X를 누르지 않았다면
+	  if(fruit == ''){  //fruit.length == 0 //과일 이름을 입력하지 않았다면
+		alert('과일을 입력하세요!!');  
+	  }else{
+        alert("당신이 좋아하는 과일은 ["+fruit+"]입니다!!");
+	  }
+   }
+   
+   
+ </script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,349 @@
+
+
+
+
+
+<SEQUENCE시퀀스> : 자동번호부여
+- 숫자값이 일정한 규칙에 의해서 연속적으로 자동증가.
+- 테이블에 종속적이지 않다(테이블과 독립적)
+
+형식)
+  CREATE SEQUENCE sequence_name  
+                  [INCREMENT BY] 증가치
+                  [START WITH] 초기값
+                  [MAXVALUE n|NOMAXVALUE]
+                  [MINVALUE|NOMINVALUE]
+                  [CYCLE|NOCYCLE]
+                  [CACHE|NOCACHE];
+  maxvalue: 시퀀스가 가질 수 있는 최대값 지정.   
+            nomaxvalue일 경우 ascending순서일 경우 10의 27승 
+                              descending일 경우 -1           
+  minvalue: 시퀀스가 가질 수 있는 최대값 지정.               
+            nominvalue일 경우 ascending 1
+                              descending 10의 26승으로 설정.
+  cache: 메모리상의 시퀀스 값을 관리하도록 하는 것인데 기본값은 20.
+         nocache는 메모리 상에서 시퀀스를 관리하지 않음.   
+         
+사용법)
+   시퀀스명.nextval
+   시퀀스명.currval         
+         
+create sequence test_seq;  -- 기본 1부터 시작해서 1씩 증가되는 숫자값
+ ----> 시퀀스  생성.         
+         
+drop sequence test_seq;         
+create sequence test_seq
+       start with 1
+       increment by 1
+       nocycle
+       nocache;
+
+- 현재 숫자 보기(조회)
+  select test_seq.currval
+  from dual; 
+
+ORA-08002: sequence TEST_SEQ.CURRVAL is not yet defined in this session
+
+- 자동 번호(숫자) 얻어오기
+  select test_seq.nextval from dual;
+  select test_seq.nextval from dual;
+  select test_seq.nextval from dual;
+  select test_seq.nextval from dual;
+  select test_seq.nextval from dual;
+   ---> 5
+
+- 현재 숫자 보기
+  select test_seq.currval from dual;
+   CURRVAL
+----------
+         5
+         
+테이블에 적용한 사례)
+   alter table dept3
+   drop primary key cascade;
+
+
+   drop table dept3;
+   create table dept3
+   as select * from dept
+      where 1=0;         
+
+   <dept3테이블 deptno에 primary key설정>
+   alter table dept3
+   add constraint dept3_pk primary key (deptno);
+  
+   <행 데이터 입력>
+   insert into dept3 values (10, '영업부', '서초');
+   insert into dept3 values (20, '자재부', '대전');
+   insert into dept3 values (30, '개발부', '남터');
+
+SQL> select * from dept3;
+
+    DEPTNO DNAME            LOC
+---------- ----------------------------
+        10 영업부                       서초
+        20 자재부                       대전
+        30 개발부                       남터
+
+
+
+
+
+
+
+  ~~~~~~~~   시간이 흘러    ~~~~~~~~~~~~~~~~~~~~
+  
+    데이터  ====> '기획부'         '강남'
+
+   insert into dept3 (dname,loc) values ('기획부','강남');
+---> ORA-01400: cannot insert NULL into ("SCOTT"."DEPT3"."DEPTNO")
+
+   insert into dept3 (deptno, dname,loc) values (30, '기획부','강남');
+---> ORA-00001: unique constraint (SCOTT.DEPT3_PK) violated
+
+SQL> select * from dept3;
+
+    DEPTNO DNAME           LOC
+---------- ----------------------------
+        10 영업부                       서초
+        20 자재부                       대전
+        30 개발부                       남터
+  
+   insert into dept3 (deptno, dname,loc) values (40, '기획부','강남');
+   
+SQL> select * from dept3;
+
+    DEPTNO DNAME           LOC
+---------- ---------------------------- 
+        10 영업부                       서초
+        20 자재부                       대전
+        30 개발부                       남터
+        40 기획부                       강남
+
+--------------------------------------------------------------------------------
+     drop table dept3;
+     create table dept3
+     as select * from dept
+        where 1=0;
+
+     <테이블내에 규칙적인 부서번호를 표현 ---> sequence객체 적용!!>
+     create sequence dept3_seq 
+                   start with 10  -- 시작
+                   increment by 10  -- 증가치
+                   nocycle
+                   nocache;
+
+   insert into dept3 values (dept3_seq.nextval , '영업부', '서초');
+   insert into dept3 values (dept3_seq.nextval , '자재부', '대전');
+   insert into dept3 values (dept3_seq.nextval , '개발부', '남터');
+
+SQL> select * from dept3;
+
+    DEPTNO DNAME            LOC
+---------- ----------------------------
+        10 영업부                       서초
+        20 자재부                       대전
+        30 개발부                       남터
+
+
+
+~~~~~~~~~~~~~~~~~~~~~ 시간이 흘러 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 부서 정보 추가 데이터 ===> '기획부'   '강남'
+ 
+ 
+ insert into dept3  values (dept3_seq.nextval, '기획부','강남');
+
+SQL> select * from dept3;
+
+    DEPTNO DNAME           LOC
+---------- ----------------------------
+        10 영업부                       서초
+        20 자재부                       대전
+        30 개발부                       남터
+        40 기획부                       강남
+
+* Oracle 11g에서 시퀀스 사용시 주의할 점!!
+  deferred_segment_creation=true(기본값) ===> false로 변경
+  
+  alter system set deferred_segment_creation=false;    
+  ORA-01031: insufficient privileges ==> 권한불충분
+
+SQL> conn system/oracle    또는  conn /as sysdba
+Connected.
+SQL> alter system set deferred_segment_creation=false;
+
+System altered.
+
+SQL> conn scott/tiger
+Connected.
+
+======================================================================
+<PL/SQL>
+ - SQL의 장점은 쿼리문 하나로 원하는 데이터를 검색 조작할 수 있다는 점인데,
+   SQL문 자체는 비절차적 언어이기 때문에 몇개의 쿼리문 사이에 어떠한 연결    
+   및 절차성이 있어야 하는 경우는 사용할 수 없다.
+   
+ - 이 점을 극복하기 위해 SQL언어에 절차적인 프로그래밍 언어를 가미해 만든   
+   것이 PL/SQL
+
+<PL/SQL구조>
+     
+    DECLARE SECTION (선언부)
+      - PL/SQL에서 사용하는 모든 변수나 상수를 선언.
+      
+    EXECUTABLE SECTION (실행부)
+      - 절차적형식으로 SQL을 실행할 수 있도록 절차적요소인 제어문,반복문
+        ,함수정의등 로직기술.      
+        
+    EXCEPTION SECTION (예외처리)
+      - 실행 중 발생되는 에러를 해결하기 위한 문장으로 구성.
+
+-------------------------------------------------------------------------
+<변수선언>
+     변수명         자료형;
+  vempno    number(4);
+  vempno2   emp.empno%type;
+             -- emp테이블의 empno컬럼이 갖는 자료형을 참조하겠다.
+             
+<레퍼런스 변수>
+   - %TYPE (한 개의 컬럼),  %ROWTYPE (한 행을 구성하는 모든 컬럼을 참조)
+
+    vemp emp%ROWTYPE;
+        ----> emp테이블이 갖는 모든 컬럼의 자료형을 vemp로 참조하겠음!!
+
+---------------------------------------------------------------
+문제) 화면 콘솔에 '안녕, PL/SQL~!!' 을 출력하시오.
+    declare  -- 선언부
+       -- (실행부에 필요한) 변수선언
+              
+    begin  -- 실행부 {
+       -- SQL문   
+       dbms_output.put_line( '안녕, PL/SQL~!!');         
+    end;  -- }
+    /
+    
+    ==> 화면 출력 설정 : set SERVEROUT on
+                   --------> 기본값: SERVEROUT off
+    
+문제) 7788사번을 갖는 사원의 사원번호와 사원명, 급여를 화면에 출력.
+   ---> emp_info.sql    
+
+-------------------------------------------------------------------
+<PL/SQL>
+   declare -- 선언부
+         실행부에서 사용할 변수 선언;
+   
+   begin -- 실행부 시작
+     SQL문(DQL,DML)
+     
+     select empno, ename, sal  into 변수명1, 변수명2, 변수명3
+     from emp;
+     
+     insert문, delete문, update문
+     
+         조건문 또는 반복문과 함께 하는 SQL문 작성!!
+         
+         함수호출    
+   
+   end;  -- 실행부 끝
+   /
+   
+-----------------------------------------------------------------
+<조건문>
+1. if문
+
+   형식)
+      if  [(]  조건식    [)]  
+        then   -- { 시작을 표현
+         
+                조건식을 만족했을 때 실행할 문장;
+      
+      end if;  -- } 끝을 표현
+
+  ----> if_test.sql
+  ----> 두 수를 비교해서 크다, 작다를 출력!!
+
+2. if~else문
+   형식)
+   
+     if 조건식
+       then 조건식 결과가 참일때 실행할 문장;
+       else 조건식 결과가 거짓일때 실행할 문장;
+     end if;
+     
+문제) 특정사원이 커미션을 받는지 안 받는지 구분해서 출력하시오.
+    예1: 사번7788은 SCOTT사원이고 커미션을 받지 않습니다.
+    
+    예2: 사번7654은 MARTIN사원이고 커미션을 1400 받습니다.
+    
+  ==> if_else_test.sql  
+     
+
+3. if~elsif~else문
+
+
+
+
+
+
+
+
+   
+   
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         
+         
+         
+         
+         
+         

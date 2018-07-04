@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>사용자정의함수</title>
+   <script type="text/javascript">
+      //함수정의
+      function test(){
+    	  alert('함수테스트~!!')
+      }
+      function hello(){
+    	  alert('안녕~!!');
+      }
+      function hello(name){
+    	  alert('안녕,'+name+"!!");
+      }
+      function hello(name,age){
+    	  
+    	  if(name == undefined){//인자(name,age)가 전달되지 않았다면
+    		  alert('안녕~!!'); 
+    	  }else if(age == undefined){//이름전달, 나이가 전달되지 않았다면
+    		  alert('안녕,'+name+"!!");
+    	  }else{//이름(첫번째인자),나이(두번째인자)가 전달되었을때
+    	      alert('안녕,'+name+"!!\n당신의 나이는 "+age+"살 입니다^^*");
+    	  }
+      }
+   </script>
+</head>
+<!-- fun_test.html -->
+<body>
+ <h3>사용자 정의함수 테스트</h3>
+ <script type="text/javascript">
+     //함수호출
+     //test();
+ </script> 
+ <input type="button"  value="test()호출" onclick="test()"><br>
+ <button onclick="hello()">hello()호출</button><br>
+ <button onclick="hello('길동')">hello('길동')호출</button><br>
+ <button onclick="hello('길동',13)">hello('길동',13)호출</button><br>
+ <button onclick="hello('주원',17,'학생')">hello('주원',17,'학생')호출</button><br>
+</body>
+</html>
+
+
+
+
+
+
+

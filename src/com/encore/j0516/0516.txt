@@ -1,0 +1,26 @@
+
+
+
+
+
+
+
+<Simple계산기 작성>
+---> MVC패턴으로 작성
+      (Model, View, Controller)
+      
+- 뷰 (calc.view)
+  CalcView.java  : 계산기폼
+  
+- 모델 (calc.model)
+  Calculator.java : 더하기, 빼기, 곱하기, 나누기 기능
+  
+- 컨트롤러 (calc.control)
+  CalcController.java : 전체 프로그램 제어   (main()메소드 포함)
+
+
+
+
+
+
+        

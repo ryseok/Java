@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>배열Array 테스트</title>
+</head>
+<!-- array_test.html -->
+<body>
+  <h3>배열Array 테스트</h3>
+  <hr>
+  <script type="text/javascript">
+    //배열 객체 생성
+    var str = new String("문자열");
+    var myArry = new Array(5);//myArry[0]~myArry[4]할당
+    document.write('myArry배열크기 = '+ myArry.length);
+    
+    //배열안에 데이터 입력
+    myArry[0]=11;
+    myArry[1]=22;
+    myArry[2]=true;
+    myArry[3]="홍길동";
+    myArry[4]=new Date();
+    
+    //myArry[5]='길라임';
+    myArry[6]=3.14;
+  
+    document.write('<br>데이터입력후 myArry배열크기 = '
+    		                       + myArry.length);
+    
+    for(var i=0; i<myArry.length; i++){//배열 인덱스 표현
+      document.write('<br>myArry['+i+']='+ myArry[i]);
+    //배열번지내에 입력을 하지 않은 경우 ---> undefined가 출력
+    }
+    
+    document.write('<hr>');
+    //정해진 데이터(1,2,3,4,5)를 배열에 저장.
+    //var myArry2 ={1,2,3,4,5}; //에러: {}는 JSON에 예약!!
+    //JSON ---> JavaScript Object Notation : 자바스크립트 객체
+    var myArry2 = [1,2,3,4,5]; //배열은 초기화데이터를 []에 입력!!
+    
+    for(var i=0; i<myArry2.length; i++){//배열 인덱스 표현
+        document.write('<br>myArry2['+i+']='+ myArry2[i]);
+    }
+    
+    document.write('<hr>');
+    var p = {name:'홍길동', age:13, job:'학생', 
+    		etc:[11,22,33]};//key:value
+    
+    document.write('<br>이름='+ p.name);//변수명.key명
+    document.write('<br>나이='+ p.age);//변수명.key명
+    document.write('<br>직업='+ p["job"]);//변수명.key명
+    
+    document.write('<hr>');
+    //for문을 통해 etc에 저장된 데이터를 출력!!
+    //p.etc == 배열
+    for(var i=0; i<p.etc.length; i++){
+    	document.write('<br>p.etc['+i+']='+ p.etc[i]);
+    }
+    
+  </script>
+  
+</body>
+</html>
+
+
+

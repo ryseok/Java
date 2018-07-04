@@ -1,0 +1,151 @@
+
+
+
+<JDBC>
+1. 드라이버 로딩(DB제품군 선택)
+   Class.forName("클래스명");
+   
+   Class.forName("패키지명.드라이버클래스명");
+
+2. Connection객체생성 (특정DB연결)
+   Connection conn = DriverManager.getConnection("url정보","user정보","pwd정보");
+
+    url : 접속DB ip, port번호, sid
+    user : 접속계정
+    pwd  : 접속계정에 대한 비밀번호
+
+3. Statement객체생성 (execute("sql문")- DB에게 SQL문 전달!! )
+    Statement stmt = conn.createStatement();
+
+    int i = stmt.executeUpdate("전달하고자 하는 SQL(DML)문");
+        i ---> 수정 또는 삭제된 행의 갯수
+------------------------------DML업무------------------------------------------        
+        
+    ResultSet rs = stmt.executeQuery("전달하고자 하는 SQL(DQL)문");
+              rs ---> 조회된 행과 열의 덩어리 데이터 
+              
+4. ResultSet객체생성 (조회된 행열데이터를 저장)
+
+  ResultSet rs = stmt.executeQuery("전달하고자 하는 SQL(DQL)문");
+     4_1
+        boolean b = rs.next(); //덩어리데이터중 맨 위에서 부터 한 행을 얻어오기.    
+                b: 가져올 행이 있으면 true
+        
+        rs.next()는 보통 if 또는 while과 많이 사용!!
+           if()는 where절에 primary key 비교
+           while()은  조회된 행의 갯수가 2행 이상이 예상되어질때
+        
+     4_2
+     
+        rs.get자료형(int 인덱스); 또는  rs.get자료형(String 컬럼명);
+        
+       예) select sal,       empno,     ename  en  from emp;
+    인덱스:        1           2          3   
+             rs.getInt(1) 
+             rs.getInt("sal")
+       
+                      rs.getInt(2)
+                      rs.getInt("empno")
+                              
+                                  rs.getString(3)
+                                  rs.getString("ename")  (X)
+                                  rs.getString("en")     (O)
+                              
+
+------------------------------DQL업무------------------------------------------        
+
+==============================================================================
+
+1. j0504패키지의 NameMenu.java 와  NameMenuTest.java 
+     ----> 현재 패키지에 복사
+   
+   ===>  (NameMenu)데이터 저장 : 배열  -----> DB변경!!
+   
+2. 이름을 저장할 테이블 객체 생성.
+    drop table names;
+    create table names(
+       name varchar2(15)
+    );
+    
+==============================================================================
+<Person GUI에 JDBC적용하기>
+1. com.encore.person패키지의 내용 복사하기
+   
+   com.encore.j0614.model.dao
+     - Model ===> PersonDAO  (DAO==> Data Access Object) 
+     
+   com.encore.j0614.model.dto
+     - Person  ===> 그대로 사용 또는 PersonDTO, PersonVO, PersonBean
+     
+   com.encore.j0614.view
+     - InputForm, MainView, UpForm 그대로 복사 
+     
+   com.encore.j0614.control
+     - Controller 새로작성
+   
+2. person테이블 생성하기
+   
+   drop table person;
+   create table person(
+     no   number    constraint  person_pk  primary key,
+     name varchar2(15),
+     age  number(3),
+     job  varchar2(15)
+   );
+      
+   create sequence person_seq
+   start with 1
+   increment by 1
+   nocycle
+   nocache;
+   
+   ===> person.sql
+   
+=====================================================================
+<작업순서>
+1. 메인뷰: 수정버튼 클릭시
+  - JOptionPane의 inputDialog를 통해 수정할 번호 입력.
+  - 위 번호에 해당하는 person검색 (PersonDAO - select )
+  - 검색결과를 수정폼에 출력
+  - 수정폼 이동
+
+2. 수정폼: 수정버튼 클릭시
+  - 수정할 정보 얻어오기 (getText)
+  - DB수정 작업 (PersonDAO - update)
+  - 수정작업 성공시 (수정갱신된) 메인뷰로 이동
+  
+3. 메인뷰: 삭제버튼 클릭시
+  - JOptionPane의 inputDialog를 통해 삭제할 번호 입력.
+  - DB삭제 작업 (PersonDAO - delete)
+     - 성공 : 성공메시지 출력(JOptionPane의 messageDialog) 후 메인뷰 갱신
+     - 실패 : 실패메시지 출력(JOptionPane의 messageDialog)   
+
+4. 유효성 검사(valid check)
+  - 입력폼, 수정폼에서 빈값에 대해 체크
+  - 입력폼, 수정폼에서 나이에 숫자값 체크
+
+
+   
+
+
+
+
+
+
+
+    
+  
+     
+
+
+
+
+
+
+
+
+
+
+
+
+

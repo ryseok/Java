@@ -1,0 +1,38 @@
+<?xml  version='1.0' encoding="UTF-8" ?>
+
+<!-- 
+<!DOCTYPE person
+   [
+     
+     <!ELEMENT person (name,age,job)>
+   
+   ]> -->
+<!DOCTYPE person
+   [
+      <!ELEMENT  person (name)+ >    
+      <!ELEMENT  name (#PCDATA) >
+      <!ATTLIST person
+                x      CDATA        #REQUIRED
+                y      ID           #IMPLIED
+                gender (남성|여성)    "여성"
+                area   CDATA        #FIXED "안성">
+   ]>
+<person x='100' y='y200' gender="남성" area="안성" >
+  <name>java &amp; xml</name>
+  <name>su2&lt;su3 &#169;</name>
+  <name><![CDATA[
+         html&JavaScript
+         su4<su5  &#169;
+  ]]></name>
+</person>
+<!-- 
+
+    com- -ment 
+
+
+-->
+
+
+
+
+

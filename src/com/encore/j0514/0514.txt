@@ -1,0 +1,55 @@
+
+
+
+
+
+<AWT>
+ - GUI관련 클래스들의 묶음!!
+ 
+<GUI프로그램 작성>
+
+class GUITest{
+   //변수선언(필드)
+   int su;//속성변수(값을 저장)
+   A  a;//참조변수(주소를 저장)
+
+
+   //컴포넌트, 컨테이너 선언
+   Button bt=null;
+   Frame  f =null;
+
+   GUITest(){
+      //초기화(값할당) 작업!!
+      su = 100;
+      a  = new A();
+   
+      //선언된 멤버 컴포넌트, 컨테이너 객체 생성   
+      bt = new Button("버튼");
+      f = new Frame("프레임");
+      
+      //f.setLayout(LayoutManager);
+      //f.setLayout(new FlowLayout());//가운데
+      //f.setLayout(new GridLayout());//행열지정,균등배치
+      //f.setLayout(new BorderLayout());//중앙, 동서남북  ====> Frame의 기본 레이아웃
+      f.add(bt);//컨테이너.add(컴포넌트);
+      
+      f.setSize(300,300);
+      f.setVisible(true);   
+   }//생성자
+   
+   public static void main(String [] args){
+      //생성자 호출
+      new GUITest();
+   }
+}
+
+
+
+
+
+
+
+
+
+
+ 

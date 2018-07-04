@@ -1,0 +1,55 @@
+
+
+
+
+<자바 I/O>
+
+- Stream이 기본
+    ----> 8bit(1byte)로 구성된 데이터의 흐름.
+    
+- 입출력 4대 클래스(추상클래스:입출력의 특성이 되는 부모클래스)
+
+            byte단위                   문자단위             대표메소드
+    입력          InputStream        Reader       read()
+    출력          OutputStream       Writer       write()
+
+- File클래스 (파일의 속성을 얻기 위한 클래스)    
+  메소드)  exists() : 존재유무 boolean
+         isFile() : 파일일때 true
+         isDirectory() : 폴더일때 true
+         mkdirs() : 명시된 디렉토리 생성 기능
+                         ※참고  new FileOutputStream("gildong.txt")  -----> 없는 파일 생성
+                new FileWriter("lime.txt");    -----> 없는 파일 생성
+         delete() : 명시된 파일 또는 디렉토리(폴더) 삭제 기능         
+
+- 파일복사
+  FileReader fr = new FileReader("a.txt");
+  FileWriter fw = new FileWriter("b.txt");
+  
+  fr.read() ----> 파일내의 한 문자읽어서 리턴 , 읽을 문자 없을 시 -1 리턴
+  fw.write(int char) ----> 파일에 한 문자씩 쓰기(출력)
+  
+  int i;
+  while(  (i=fr.read()) !=  -1 ){// 읽은 문자가 있다면, i:읽은 문자에 대한 코드값
+     fw.write(i);
+  }
+  --------------------------------------------------------------------
+  FileInputStream fis = new FileInputStream("a.txt");
+  FileOutputStream fos = new FileOutputStream("b.txt");
+  
+  byte []b = new byte[10];
+  
+  int i;
+  while(  (i=fis.read(b)) !=  -1 ){//i: 읽은 바이트 수
+     fos.write(b,0,i);
+  }
+  
+
+
+
+
+
+
+
+
+

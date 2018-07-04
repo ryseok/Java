@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>이미지 테스트</title>
+  <script type="text/javascript">
+     function largeImage(){
+    	//문서내의 이미지 객체 얻어오기: document.이미지명!! 
+    	 document.img1.width=800;
+    	 document.img1.height=1000;
+     }
+     function smallImage(){
+    	 document.img1.width=200;
+    	 document.img1.height=250;
+     }
+     
+     var w=400;//가로길이
+     var h=500;//세로길이
+     function changeImageSize(size){
+    	if(size == 'S'){
+    	 document.img1.width=w/2;//200;
+    	 document.img1.height=h/2;//250;
+    	}else if(size == 'M'){ 
+    	 document.img1.width=w;//400;
+    	 document.img1.height=h;//500;
+    	}else {//if(size == 'L'){
+    	 document.img1.width=w*2;//800;
+    	 document.img1.height=h*2;//1000;
+    	}
+     }//changeImageSize
+     
+     
+     var flag=true;
+     
+     function imageChange(){
+    	 
+       if(flag)
+    	 document.img2.src='../image/young.jpg';
+       else
+    	 document.img2.src='../image/won.jpg';
+    	 
+       flag = !flag;	 
+     
+       //데이터(변수값)확인 또는 진행상태확인: 
+       //document.write(변수명 또는 문자열); alert(변수명 또는 문자열); cosole.log(변수명 또는 문자열);
+       //alert('imageChange');
+       /*
+       
+       console.log('imageChanage');
+       
+       var img2 = document.img2;
+       
+       console.log('img2.src==>'+img2.src);
+       // "file:///C:/jaelee/workspace/JavaApp/image/won.jpg"
+       var str = img2.src;
+       var idx = str.lastIndexOf('/');
+       var fileName = str.substring(idx+1);//'won.jpg'
+              
+       //if(img2.src == '../image/won.jpg')//현재이미지가 원빈 이라면!!
+       if(fileName == 'won.jpg')
+         document.img2.src='../image/young.jpg';
+       //if(img2.src == '../image/young.jpg')//현재이미지가 이나영 이라면!!
+       else //if(fileName == 'young.jpg')
+         document.img2.src='../image/won.jpg';
+       */
+       
+     }//imageChange()
+     
+     function imageChange2(imageName){
+    	 
+       document.img3.src='../image/'+imageName+'.jpg';
+       /* if(imageName == 'yong') 
+    	 document.img3.src='../image/young.jpg';
+       else if(imageName == 'wedding')
+    	 document.img3.src='../image/wedding.jpg';
+       else //if(imageName == 'won')
+    	 document.img3.src='../image/won.jpg'; */
+       
+       
+     }//imageChange2
+  </script>
+</head>
+<!-- image_test.html -->
+<body>
+  <h3>자바스크립트를 통한 이미지 조작</h3>
+  <hr>
+  <img name="img1"
+       alt="대체문자열" title="도움말"
+       src="../image/won.jpg" 
+       width="400" height="500">
+  <br><br>
+<!--   <input type="button" value="크게" onclick="largeImage()">  
+  <input type="button" value="작게" onclick="smallImage()"> -->  
+  <input type="button" value="크게" onclick="changeImageSize('L')">  
+  <input type="button" value="작게" onclick="changeImageSize('S')">  
+  <input type="button" value="원래대로" onclick="changeImageSize('M')">  
+  <hr>
+  <img name="img2"
+       alt="대체문자열" title="도움말"
+       src="../image/won.jpg" 
+       width="400" height="500"
+       onclick="imageChange()">
+  <!-- 
+    문제) 원빈이미지(img2)를 클릭하면 이나영 이미지(young.jpg)로 변경,
+             이나영 이미지를 클릭하면 원빈 이미지로 변경하는 
+             함수  imageChange()를 정의하시오.
+   -->     
+   
+   <img name="img3"
+       src="../image/won.jpg" 
+       width="400" height="500"
+       onmouseover="imageChange2('young')"
+       onmousedown="imageChange2('wedding')"
+       onmouseout="imageChange2('won')"
+       >
+  <!-- 
+     문제) 이미지(img3)에 마우스를 올리면 이나영 이미지로 변경,
+        이미지를 클릭하면 웨딩사진 이미지로 변경,
+        이미지를 벗어나면 원빈 이미지로 변경하는 
+        함수 imageChange2()를 정의하시오.
+   -->       
+       
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,19 @@
+<사원테이블구성> - EMP
+ EMPNO    (사원번호)
+ ENAME    (사원명)  
+ JOB      (직책)    
+ MGR      (매니저,직속상사)
+ HIREDATE (고용일,입사일)  
+ SAL      (급여)         
+ COMM     (커미션,특별수당,성과급여)
+ DEPTNO   (사원이 속한 부서번호)          
+      
+<부서테이블구성> - DEPT
+ DEPTNO (부서번호) 
+ DNAME  (부서명)   
+ LOC    (부서위치)              
+
+<급여 등급 테이블구성> - SALGRADE
+ GRADE (등급 1~5)
+ LOSAL (최소급여)
+ HISAL (최대급여)

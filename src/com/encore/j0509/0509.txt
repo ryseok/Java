@@ -1,0 +1,159 @@
+
+
+<사용자정의 예외>
+- 예외의 발생은 JVM에 의해 실행중 발생할 수도 있지만
+  사용자 프로그램에서 인위적으로 예외를 발생시킬 수 있다
+  (throw문을 제공)
+  
+형식)
+    throw 예외객체;
+    throw new 예외객체타입(매개변수); 
+
+class MyException extends Exception{
+   public MyException(String msg){
+       super(msg);
+   }   
+}
+
+------------------------------------------------------
+class A{
+   B b;//null
+}
+class B{
+  
+   void c(int su){
+      if(su == 10)
+        {
+          //예외 발생!!
+          throw NullPointerException();
+        }
+   }
+
+}
+
+
+  A a = new A();
+  
+   int d=10;
+   a.b.c(d);
+   
+   문제) NullPointerException발생시키는 요소는?
+     a - 70%
+     b - 20%
+     c - X
+     d - 10%
+=======================================================
+<중첩클래스> 포함,Nested 
+- 클래스내에 또 다른 클래스를 구성하는 것.
+  ※ 주의 : 메소드 내에는 다른 메소드를 정의 할 수 없음!!
+  
+
+종류)
+  정적 중첩클래스 - static이 선언된 내부클래스
+                          외부의 자원을 사용할 때 static붙는 인스턴스만 접근가능.
+  
+  비정적 중첩클래스 - static이 선언되지 않은 내부클래스
+               inner클래스!!
+
+class A{ //외부클래스, Outer클래스, Top-level클래스
+  //필드
+  //메소드
+  //1차 자원 정의
+  
+  int i=11;
+  
+  void hello(){
+      print();   (X)
+      
+      B b = new B();
+        b.print();    (O)
+  } 
+  
+  class B{ //내부클래스, Inner클래스
+     //2차 자원 정의
+     void callTest(){
+         hello();   (O)
+     }
+     
+     void print(){
+     
+     }
+  }//B class
+}//A  class
+
+저장: A.java  ----> 컴파일 결과 ---> A.class    A$B.class
+
+=======================================================
+* TUI (Text User Interface)
+   -프로그램 실행을 Text에 의존해서 실행.
+   ex) 메뉴에서 1을 누르면 추가, 2를 누르면 검색, 3을 누르면 종료.
+   
+
+* AWT (Abstract Window Toolkit)
+   - GUI(Graphic User Interface)환경을 구축하기위한 class들의 묶음.
+   - GUI와 관련된 class들의 묶음.  java.awt.*;
+   
+   1. Component : Menu, Button, Label, Choice, Checkbox, List
+                      TextField, TextArea, Scrollbar.....
+                      
+   2. Container : Component의 객체를 생성한 후에 그 객체를 배치한다.
+         
+		     
+                  Object
+                     |
+                 Component   
+                     |
+                 Container
+	                 |
+	      ------------------------
+	     |                        |
+	   Panel                   Window
+	     |                        |
+	   Applet                   Frame
+
+default:  FlowLayout        BorderLayout   
+
+     Panel : display(x) , 한 영역에 두개 이상의 컴포넌트를 붙일때 사용.
+              컴포넌트 속성을 지정하기위해 사용.
+     Frame : display(o)
+
+   3. Event 처리: Component에 기능을 실제로 부여하는 것.
+
+* Container의 배치방법(LayoutManager)
+   ----> 컴포넌트를 컨테이너에 어떻게 위치시킬지 방법을 정의.
+   
+    Frame f = new Frame();
+    Button b = new Button();
+      FlowLayout fl = new FlowLayout();
+      f.setLayout(fl);//레이아웃(배치) 설정    
+      f.add(b);
+    
+ - FlowLayout(가운데 정렬)
+    : 가운데를 기준으로 해서 Component들이 배치.
+      (Frame크기에 따라 배치가 변경)
+    
+ - BorderLayout(방위정렬)
+    : 방위에 따라 사용자가 임의 배치 가능 (동,서,남,북, 중앙)
+    : 상대적으로 큰 영역데 강조할 컴포넌트를 배치.
+ 
+ - GridLayout(같은 크기 정렬, 행열표현 정렬)
+    : Container의 크기를 같은 크기로 나누어 Component를 붙인다.
+ 
+ - CardLayout(같은 위치 정렬)
+    : 같은 위치에 여러개의 Component를 배치할 때 사용.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

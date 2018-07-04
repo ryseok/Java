@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>String문자열테스트</title>
+</head>
+<!-- string_test.html -->
+<body>
+  <h3>문자열 객체 테스트</h3>
+  <hr>
+  <script type="text/javascript">
+     var str='JavaScript~!!';
+    //인덱스      0123456789012
+     
+     document.write('str문자열길이='+ str.length);
+     document.write('<br>S의 인덱스='+ str.indexOf('S'));
+     document.write('<br>s의 인덱스='+ str.indexOf('s'));
+     document.write('<br>a의 인덱스(뒤에서 검색)='
+    		          + str.lastIndexOf('a'));
+     document.write('<br>2인덱스의 문자='+ str.charAt(2));
+    
+     //전체 문자를 각각출력
+     for(var i=0; i<str.length; i++){
+    	document.write('<br>'+str.charAt(i)); 
+     }
+     
+     //str문자열에서 Script뽑아오기!!
+     document.write('<hr>');
+     document.write(  str.substring( str.indexOf('S') )  );
+        //Script~!!
+     document.write('<br>' +
+    		 str.substring( str.indexOf('S'),//시작인덱스
+    		                str.indexOf('~') //끝인덱스
+    		               ) );
+        
+     var str2 = '  scr ipt'; //'script'앞에 두개의 공백(space)
+     //---> str2의 공백을 제거하시오!!
+     document.write('<br>str2의 문자열 길이='+ str2.length);
+       //str2 = str2.trim(); //IE8버전 이하에서는 지원X ---> 에러
+       str2= str2.replace(/ /g,'')  //replace(oldChar,newChar)
+                 .replace('\t','')
+                 .replace('\n','');
+     document.write('<br>공백제거후 str2의 문자열 길이='+ str2.length);
+     
+     var str3 = '010-1234-5678';
+     //문제) '-'을 구분자로 해서 010, 1234, 5678을 각각 출력하시오.
+     var arr =str3.split('-'); //arr: 문자열 배열!!
+     for(var i=0; i<arr.length; i++){
+    	document.write('<br>arr['+i+']='+ arr[i]);
+     }
+     
+  </script>
+</body>
+</html>
+
+
+
+

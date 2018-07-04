@@ -1,0 +1,893 @@
+
+
+
+
+========================= ANSI JOIN 문제 =====================================
+문제1) 사원들의 이름, 부서번호, 부서이름을 출력. 
+   select  ename, e.deptno, dname
+   from emp e inner join dept d
+   on e.deptno = d.deptno;
+   
+   select  ename, deptno, dname
+   from emp e inner join dept d
+   using (deptno);
+   
+   select  ename, deptno, dname
+   from emp e natural join dept d;
+
+
+문제2) 부서번호가 30번인 사원들의 이름, 직급, 부서번호, 부서위치를 출력.
+  select e.ename, job, deptno, loc
+  from emp e  natural join dept d
+  where  deptno = 30;
+
+
+문제3) 커미션을 받는 사원의 이름, 커미션, 부서이름, 부서위치 출력(커미션 0은 제외)                           
+  select ename, comm,           dname, loc
+  from      emp e    natural join    dept d
+  where    comm != 0 
+           and
+           comm is not null;
+                             
+문제4) DALLAS에서 근무하는 사원들의 이름, 직급, 부서번호, 부서이름을 출력.
+  select ename, job, e.deptno, dname
+  from   emp e  join dept d
+  on  e.deptno = d.deptno
+  where  loc='DALLAS';
+
+
+문제5) 사원이름에 'A'가 들어가는 사원들의 이름과 부서이름을 출력.
+   select ename, dname
+   from   emp e join dept d
+   using  (deptno)
+   where  ename like '%A%';          
+
+
+문제6) 사원이름과 직급, 급여, 급여등급을 출력
+  select ename, job, sal, grade
+  from   emp e   inner join  salgrade s
+  on  e.sal between s.losal and s.hisal;
+
+
+문제7) 사원들의 이름과 그 사원과 같은 부서에 근무하는 사원의 사원명, 부서번호를 출력.
+        ===> 자기 이름을 제외한 동료 56행 출력!!  
+        
+   select my.ename 자신, co.ename 동료, my.deptno
+   from  emp  my join emp co
+   on  my.deptno  =  co.deptno
+   where  my.empno != co.empno
+   order by my.ename;                     
+   
+======================= 서브쿼리 문제 ==============================
+문제1) SCOTT와 급여가 동일하거나 더 많이 받는 사원의 이름과 급여출력   
+   select ename, sal
+   from emp
+   where  sal >= 3000;
+     
+   select ename, sal
+   from emp
+   where  ename <> 'SCOTT'
+          and
+          sal >= (select sal
+                  from emp
+                  where ename='SCOTT');  
+
+ENAME                       SAL
+-------------------- ----------
+KING                       5000
+FORD                       3000
+
+
+insert into emp    (empno, ename, sal,  deptno)
+            values (9000, 'SCOTT', 3000, 30);
+            
+insert into emp    (empno, ename, sal,  deptno)
+            values (9002, 'SCOTT', 2000, 10);
+
+
+  
+문제2) 직급(job)이 사원(CLERK)인 사람이 속한 부서의
+        부서번호와 부서명,부서위치를 출력 
+
+  select  deptno, dname, loc -- 메인 쿼리!!
+  from dept
+  where  deptno = (select deptno
+                    from emp
+                    where job = 'CLERK');          
+---> ORA-01427: single-row subquery returns more than one row
+                  ----> 단일행 서브쿼리에  비교대상이 많다!!
+ 
+  select deptno
+  from emp
+  where job = 'CLERK';
+
+    DEPTNO
+----------
+        20
+        20
+        30
+        10
+        
+  select  deptno, dname, loc -- 메인 쿼리!!
+  from dept
+  where  deptno IN (20,20,30,10);  
+ 
+  
+  select  deptno, dname, loc -- 메인 쿼리!!
+  from dept
+  where  deptno IN (select deptno
+                    from emp
+                    where job = 'CLERK'); 
+                    
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO                    
+  
+  
+
+문제3) 사원명에 'T'를 포함하고 있는 사원들과 같은 부서에서 근무하고 있는
+       사원의 사원번호와 이름을 출력
+       
+    select empno, ename
+    from emp
+    where  deptno 연산자 (서브쿼리);
+    
+    select empno, ename
+    from emp
+    where  deptno IN (20,30,20,30);
+    
+    select empno, ename
+    from emp
+    where  deptno IN (select deptno
+					  from emp
+					  where ename like '%T%');
+    
+    select deptno
+    from emp
+    where ename like '%T%';
+
+    DEPTNO
+----------
+        20
+        30
+        20
+        30       
+       
+       
+문제4) 부서위치가 DALLAS인 모든 사원의 이름, 부서번호를 출력 
+   select ename, deptno
+   from emp
+   where deptno = (select deptno
+                  from dept
+                  where loc='DALLAS');
+                  
+   select ename, deptno
+   from emp
+   where deptno IN (select deptno
+                  from dept
+                  where loc='DALLAS');
+
+ENAME                    DEPTNO
+-------------------- ----------
+SMITH                        20
+JONES                        20
+SCOTT                        20
+ADAMS                        20
+FORD                         20
+
+   
+   
+   select deptno
+   from dept
+   where loc='DALLAS';
+
+    DEPTNO
+----------
+        20
+  
+  
+문제5) SALES부서의 모든 사원의 이름과 급여출력
+
+  select ename, sal
+  from emp
+  where deptno  IN (select deptno 
+		            from dept
+		            where dname='SALES');
+
+ENAME                       SAL
+-------------------- ----------
+WARD                       1250
+TURNER                     1500
+ALLEN                      1600
+JAMES                       950
+BLAKE                      2850
+MARTIN                     1250		            
+
+문제6) KING에게 보고하는 모든 사원의 이름과 급여를 출력.
+   select ename, sal
+   from emp
+   where  mgr=7839;
+   
+   select ename, sal, mgr
+   from emp
+   where  mgr=(select empno
+               from emp
+               where ename='KING');
+
+ENAME                       SAL        MGR
+-------------------- ---------- ----------
+JONES                      2975       7839
+BLAKE                      2850       7839
+CLARK                      2450       7839   
+   
+    select empno
+            from emp
+            where ename='KING' 
+   
+ 
+문제7) 자신의 급여가 평균급여보다 많고 이름에 'S'가 들어가는 사원과
+           (1번째조건)         (2번째조건)
+          ---> 1,2번을 동시에 만족하는 사원의 부서          
+          
+       동일한 부서에서 근무하는 모든 사원의 사원번호, 사원명, 급여 출력.   
+   
+   select empno, ename, sal
+   from emp
+   where  deptno   IN   (select deptno
+                         from  emp
+                         where sal > (select avg(sal)
+                                      from emp)
+                         and ename  like '%S%');
+ 
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7902 FORD                       3000
+      7876 ADAMS                      1100
+      7788 SCOTT                      3000
+      7566 JONES                      2975
+      7369 SMITH                       800 
+   
+select deptno
+      from  emp
+      where sal > (select avg(sal)
+                   from emp)
+                   and ename  like '%S%'   
+
+    DEPTNO
+----------
+        20
+        20   
+
+============================================================================
+<DDL> Data Definition Language : (객체)데이터 정의어
+  - create, drop, alter, rename, truncate
+  ===> DDL은 AUTO커밋!!
+
+<테이블(객체) 생성>
+
+형식) 
+  CREATE TABLE 테이블명
+  (
+           컬럼명1  자료형,
+           컬럼명2  자료형,
+           컬럼명3  자료형
+  );
+
+<자료형> 데이터: 문자,숫자,날짜,이미지등
+CHAR : 주어진크기만큼 고정길이의 문자저장 1바이트~2000바이트
+        pName char(10)
+        
+        gildong입력  ----->  '   gildong'  입력!!
+
+VARCHAR2 : 주어진크기만큼 가변길이의 문자저장 1바이트~4000바이트
+        pName varchar2(10)
+        
+        gildong입력  ----->  'gildong' 입력!!
+
+NUMBER(p[,s]) : 정밀도와 스케일로 표현되는 숫자
+        ----> byte수 생략 가능
+        
+        number(7,2)  ----> 전체자릿수 7, 소숫점 이하 2자리까지 표현
+                                      ----> 정수는 5자리까지!!
+                                      
+               예)  no  number(7,2)   ---->  12345.67
+                 입력==> 12345   (O)
+                 123456  (X)
+                 12345.678 (O)  ----> 저장: 12345.68                
+        
+        pName varchar2(10) ---> (O) 
+        pName varchar2     ---> (X) 
+        pAge  number(100)  ---> (O)
+        pAge  number       ---> (O)
+
+DATE : 날짜형식저장
+TIMESTAMP : DATE형의 확장된 형태
+BLOB : 대용량의 바이너리 데이터를 저장, 최대 4GB
+CLOB : 대용량의 텍스트 데이터를 저장, 최대 4GB
+BFILE : 대용량의 바이너리 데이터를 파일 형태로 저장, 최대 4GB  
+
+---------------------------------------------------------------
+create table emp
+(  );
+---> ORA-00904: : invalid identifier
+          ===> 테이블을 생성하기 위해서는 최소 한 개 이상의 컬럼을 정의해야 함!!
+
+create table emp
+(  
+   empno number(4)
+);
+---> ORA-00955: name is already used by an existing object
+          ===> 이미 존재하는 테이블명(객체명)과 같은 이름은 생성 불가!!
+
+create table 2emp
+(  
+   empno number(4)
+);
+---> ORA-00903: invalid table name
+       ===> 부적절한 테이블명(식별자명)  : 숫자 첫글자X, 예약어X, 특수문자X 
+
+  
+create table emp2
+(  
+   empno number(4)
+);
+===> Table created. ^^*
+
+create table emp3
+(
+   empno   number(4)
+   ename   varchar2(15)
+   sal     number(7,2)  ----> 전체 자릿수 7자리, 소숫점이하 2자리 까지 표현
+);
+
+---> ORA-00907: missing right parenthesis
+      ===> 두개 이상의 컬럼을 정의할 때   그 구분을 위해 ','(콤마)를 사용!!
+                   
+create table emp3
+(
+   empno   number(4),
+   ename   varchar2(15),
+   sal     number(7,2) 
+);
+                   
+===> Table created.
+                   
+<테이블 구조> - describe (sql*plus명령어)
+- 테이블의 컬럼명, 자료형, null(널 허용여부)조건 출력
+
+SQL> desc emp3
+
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                          NUMBER(4)
+ ENAME                                                          VARCHAR2(15)
+ SAL                                                            NUMBER(7,2)                  
+
+select * from emp2;
+select * from emp3;
+==> no rows selected (조회 결과 없음!!)
+
+<서브쿼리를 이용한 테이블 생성>
+- 기존 테이블의 구조(컬럼,자료형)와 (행)데이터를 복사
+- 제약(constraint)은 복사에서 제외!!
+
+형식)
+  CREATE TABLE 테이블명
+  AS 서브쿼리; 
+
+  create table emp4
+  as select * from emp;
+  ===> 테이블 생성
+
+SQL> desc emp4
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                          NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+ 
+===> 제약(empno에 대한 not null은 복사되지 않음!!)
+===> not null : 행 입력시 데이터를 반드시 입력받겠음.
+
+SQL> desc emp
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+
+SQL> select count(*) from emp4;
+
+  COUNT(*)
+----------
+        14
+        
+        
+        
+
+SQL> select empno, ename from emp4;
+
+     EMPNO ENAME
+---------- --------------------
+      7369 SMITH
+      7499 ALLEN
+      7521 WARD
+      7566 JONES
+      7654 MARTIN
+      7698 BLAKE
+      7782 CLARK
+      7788 SCOTT
+      7839 KING
+      7844 TURNER
+      7876 ADAMS
+      7900 JAMES
+      7902 FORD
+      7934 MILLER
+14 rows selected.
+
+<서브쿼리를 통한 테이블 생성: 원하는 컬럼과 행만 복사>
+create table emp5
+as select empno, ename, job -- *:모든 컬럼
+   from emp
+   where  deptno=30;  -- where절 없을 시에는 모든 행
+
+SQL> desc emp5
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                          NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ 
+select * from emp5; 
+
+     EMPNO ENAME                JOB
+---------- -------------------- ------------------
+      7499 ALLEN                SALESMAN
+      7521 WARD                 SALESMAN
+      7654 MARTIN               SALESMAN
+      7698 BLAKE                MANAGER
+      7844 TURNER               SALESMAN
+      7900 JAMES                CLERK
+      
+<서브쿼리를 통한 테이블 생성: 구조(컬럼,자료형)만 복사, 데이터 복사X>
+create table emp6
+as select * from emp
+   where '길동'='라임';     
+            1 = 0
+            1 > 2
+ 
+SQL> desc emp6
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                          NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+
+SQL> select * from emp6;
+ ===> no rows selected (결과행 없음 : 데이터 없음!!)      
+      
+<테이블의 구조 변경하기> ALTER
+ - 컬럼추가, 컬럼삭제, 컬럼의 자료형, 바이트 수를 변경.
+ 
+ ALTER TABLE emp6
+ ADD (email varchar2(20));
+ 
+SQL> desc emp6
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                          NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+ EMAIL                                                          VARCHAR2(20)  
+
+insert into emp6   (empno, ename,  email)
+           values  (8000,  '홍길동', 'gildong@naver.com');
+===> 1 row created.
+
+insert into emp6   (empno, ename,  email)
+           values  (8002,  '박명수', 'gildongyayaya@naver.com');
+           
+ORA-12899: value too large for column "SCOTT"."EMP6"."EMAIL" (actual: 23, maximum: 20)
+
+ ALTER TABLE emp6
+ MODIFY (email varchar2(30));
+ ==> 테이블 변경
+ 
+insert into emp6   (empno, ename,  email)
+           values  (8002,  '박명수', 'gildongyayaya@naver.com'); 
+ ---> 행 입력 성공!!
+
+ ALTER TABLE emp6
+ DROP column email;
+ ---> 테이블 변경 성공.
+ 
+SQL> desc emp6
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                          NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+ 
+※ ALTER 정리
+
+  ALTER TABLE 테이블명
+ ------------------------ 
+  컬럼추가: ADD (추가컬럼명 자료형)
+  컬럼수정: MODIFY (기존컬럼명 자료형)
+  컬럼삭제: DROP COLUMN 삭제컬럼명
+  컬럼이름변경: RENAME COLUMN 기존컬럼명 TO 새컬럼명
+  컬럼사용안함: SET UNUSED (컬럼명)
+  UNUSED설정된 컬럼들 삭제: DROP UNUSED COLUMN  
+
+===============================================================
+<테이블 객체 삭제>
+ 형식) DROP TABLE 테이블명;
+ 
+select tname, tabtype from tab; 
+---> 연결 계정이 갖고 있는 테이블명과 테이블 타입을 추력.
+ 
+TNAME                                                        TABTYPE
+------------------------------------------------------------ --------------
+DEPT                                                         TABLE
+EMP                                                          TABLE
+EMP2                                                         TABLE
+EMP3                                                         TABLE
+EMP4                                                         TABLE
+EMP5                                                         TABLE
+EMP6                                                         TABLE
+PERSON                                                       TABLE
+SALGRADE                                                     TABLE 
+ 
+drop table emp2; 
+drop table emp3; 
+drop table emp4; 
+drop table emp5; 
+drop table emp6; 
+drop table person; 
+===> 테이블 삭제됨.
+
+SQL> select tname, tabtype from tab;
+
+TNAME                                                        TABTYPE
+------------------------------------------------------------ --------------
+DEPT                                                         TABLE
+EMP                                                          TABLE
+SALGRADE                                                     TABLE
+
+<테이블 객체 이름 변경>
+ 형식) RENAME old_객체명 TO new_객체명;
+ 
+create table emp2
+as select * from emp;
+---> emp테이블이 갖는 모든 구조(컬럼,자료형)와 데이터를 복사하겠음.
+
+rename emp2 to 사원테이블;
+---> Table renamed.
+
+SQL> select tname, tabtype from tab;
+
+TNAME                                                        TABTYPE
+------------------------------------------------------------ --------------
+DEPT                                                         TABLE
+EMP                                                          TABLE
+SALGRADE                                                     TABLE
+사원테이블                                                                                                 TABLE
+
+
+<테이블의 전체 데이터 지우기>
+형식) TRUNCATE TABLE 테이블명;
+
+select count(*) from 사원테이블;
+
+  COUNT(*)
+----------
+        14
+        
+  truncate table 사원테이블;        
+---> Table truncated. (테이블이 잘렸습니다!! : 모든 데이터가 삭제 되었음)
+---> ※주의: truncate명령어를 통해 삭제된 데이터는 복구가 불가능!!
+
+select count(*) from 사원테이블;
+
+  COUNT(*)
+----------
+         0
+         
+rollback;         
+
+Rollback complete.
+
+SQL> select count(*) from 사원테이블;
+
+  COUNT(*)
+----------
+         0
+
+SQL> delete from emp;
+---> 14 rows deleted.
+
+SQL> select count(*) from emp;
+
+  COUNT(*)
+----------
+         0 
+         
+rollback;         
+
+SQL> select count(*) from emp;
+
+  COUNT(*)
+----------
+        14
+
+===============================================================
+<<DML>> Data Manipulation Language: 데이터 조작어
+ - INSERT(입력), DELETE, UPDATE(재입력)
+ 
+<INSERT> : 테이블에 (행)데이터를 추가(최초 입력)!!
+
+형식) INSERT INTO 테이블명 [(컬럼명1,  컬럼명2,  컬럼명3)]
+                 VALUES (데이터1,  데이터2, 데이터3);
+     ---> 만약, 테이블명 뒤에 컬럼명을 생략하는 경우
+                         테이블 구조에 있는 순서에 따라 전체 컬럼명이 명시된 것으로 간주.
+     ---> 명시된 컬럼의 갯수와 데이터 갯수는 일치.
+     ---> 컬럼의 순서에 맞는 자료형 데이터가 와야 함.                         
+                         
+insert into dept values ( 숫자데이터,  문자데이터1, 문자데이터2);
+ =
+insert into dept (deptno, dname, loc) values ( 숫자데이터,  문자데이터1, 문자데이터2);
+ 
+--------------------------------------------------------------------------
+create table dept2
+as select * from dept;  ---> 기존 테이블(dept)이 갖는 컬럼과 자료형, 데이터를 복사
+
+SQL> select * from dept2;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+        
+insert into dept2  (deptno, dname,   loc)
+            values (50,    '기획부', '남터');         
+
+SQL> select * from dept2;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+        50 기획부                                            남터
+        
+<데이터 입력시 에러 예>
+
+insert into dept2 (deptno, dname) values (60,'자재부','대전');
+==> ORA-00913: too many values
+
+insert into dept2 (deptno, dname) values (60);       
+==> ORA-00947: not enough values
+
+insert into dept2 (deptno, dname, loc) values ('자재부','대전',60);
+  또는
+insert into dept2 values ('자재부','대전',60);
+                           *
+==> ORA-01722: invalid number
+
+insert into dept2 (dname,   loc,     deptno)
+           values ('자재부',  '대전',     60);
+
+SQL> select * from dept2;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+        50 기획부                                            남터
+        60 자재부                                            대전
+
+<NULL값 입력방법>
+1. 컬럼명을 명시하지 않는다.
+  create table dept3
+  as select * from dept;
+
+SQL> select * from dept3;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+   
+    insert into dept3  (deptno, dname)
+                values (50,     '개발부');
+  
+SQL> select * from dept3;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+        50 개발부  
+ 
+문제) 아직 부서의 위치가 정해지지 않은 부서는 어디?
+   select dname
+   from dept3
+   where loc is null;
+
+DNAME
+----------------------------
+개발부 
+  
+2. 데이터가 들어가는 자리에 직접 null을 명시.
+    insert into dept3   values (60,'기획부', null);
+         또는
+    insert into dept3   (deptno, dname, loc) 
+                values  (60,'기획부', null);
+
+문제) 아직 부서의 위치가 정해지지 않은 부서는 어디?
+   select dname
+   from dept3
+   where loc is null;
+
+DNAME
+----------------------------
+개발부
+기획부
+    
+3. 데이터가 들어가는 자리에 ''를 입력.       
+    insert into dept3 (deptno, dname, loc)
+               values (70,    '총무부', '');    
+
+문제) 아직 부서의 위치가 정해지지 않은 부서는 어디?
+   select dname
+   from dept3
+   where loc is null;                           
+
+DNAME
+----------------------------
+개발부
+기획부
+총무부
+
+<서브쿼리로 행 추가>
+ 형식)
+   INSERT INTO 테이블명 [(컬럼명)]
+     서브쿼리; 
+
+create table dept4
+as select * from dept
+   where 1=0;
+
+SQL> select * from dept4;
+---> no rows selected
+
+insert into dept4
+select * from dept; 
+---> 4 rows created. 
+
+SQL> select * from dept4;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        10 ACCOUNTING                   NEW YORK
+        20 RESEARCH                     DALLAS
+        30 SALES                        CHICAGO
+        40 OPERATIONS                   BOSTON
+
+문제) dept5테이블을 생성하고(dept테이블의 구조[컬럼,자료형]만 복사, 데이터 복사X)
+   dept테이블의 20,40번 부서의 정보(부서번호, 부서이름)를 서브쿼리를 통해 입력하시오.
+   
+   create table dept5
+   as select * from dept;  ---> 구조와 데이터 복사
+   
+   create table dept5
+   as select * from dept
+      where 1=0;           ---> 구조만 복사 
+   
+   drop table dept5;
+
+   create table dept5
+   as select * from dept
+      where 1=0;  
+      
+SQL> select * from dept5;
+  ---> no rows selected
+  
+   insert into dept5   ----> (deptno, dname, loc) 가 생략된 것으로 간주!!
+   select deptno, dname
+   from dept
+   where deptno=20 or deptno=40;
+   
+ ==> ORA-00947: not enough values
+
+   insert into dept5  (deptno, dname)
+   select deptno, dname 
+   from dept
+   where deptno=20 or deptno=40;
+        또는
+   insert into dept5  (deptno, dname)
+   select deptno, dname 
+   from dept
+   where deptno in (20,40);
+
+QL> select * from dept5;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        20 RESEARCH
+        40 OPERATIONS 
+ 
+문제) 만약 dept테이블의 부서번호가 10단위로 구성되어 있다고 가정했을때
+    20,40,60,80,.....번의 부서의 정보를 dept5 테이블에 옮기시오(서브쿼리통한 행 추가!!).
+    
+    10,20,30,40,50,60,70,80,90  ----> 짝수
+    
+    1,3,5,7,9    ----> 홀수
+    2,4,6,8      ----> 짝수
+    
+    insert into 테이블명  [(컬럼명)]  values (데이터);
+    insert into 테이블명  [(컬럼명)]  서브쿼리;
+    
+    insert into dept5  -- (deptno,dname,loc)
+    select deptno, dname, loc
+    from dept
+    where mod(  deptno/10  ,  2) = 0;  -- where deptno IN (20,40,60,80);
+    
+SQL> select * from dept5;
+
+    DEPTNO DNAME                        LOC
+---------- ---------------------------- --------------------------
+        20 RESEARCH
+        40 OPERATIONS
+        20 RESEARCH                     DALLAS
+        40 OPERATIONS                   BOSTON    
+
+
+
+
+
+
+
+
+
+
+
+   
+   
+   

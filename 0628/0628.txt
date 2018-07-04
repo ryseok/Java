@@ -1,0 +1,181 @@
+
+
+<XML>
+- XML이란?  [데이터 저장방식]
+                    표준(W3C)데이터  ---> 호환성 높은 데이터
+                    텍스트데이터         ---> 특정 binary 아님!!
+                    
+- XML문서내의 데이터 표현방법(데이터의 저장(표현)위치)?
+   ---> 시작태그와 끝태그 사이
+        (엘리먼트의 Content)
+        
+        <시작태그>Content</끝태그>
+   
+   ---> 속성의 값
+
+   예)   <person name="홍길동">   ---> 데이터 : 홍길동
+           <age>13</age>   ---> 데이터 : 13
+       </person>                    
+   
+   ----> name속성명과  age태그명은 데이터를 서술하고 있음!!                    
+                    
+                    
+                    
+- DTD(DocumentTypeDefinition)란? 
+               문서작성규칙 (XML문서내에 출현할 엘리먼트, 속성의 종류
+                                  순서, 데이터의 종류를 정의)
+        XML문서구성시 선택적 사항이다.                            
+
+- XMLSchema?  DTD와 같은 개념.(DTD업그레드)
+                             ---> 자료형이 풍부(기본자료형+사용자정의자료형)
+  선언위치)
+    - DTD
+           <?xml version="1.0"?>
+             DTD선언
+           <root>
+           
+           </root>
+           
+    - XMLSchema
+           <?xml version="1.0"?>
+             
+           <root 스키마선언>
+           
+           </root>
+  
+    - 주의) DTD 혹은 XMLSchema를 동시에 선언할 수 없다!!
+  
+
+- DOM의 정체? 파서Parser(분석기)
+            ---> 누구에 대한 ? XML문서
+            
+  ---> 방식: tree(메모리)기반 분석
+            
+- SAX의 정체? 파서Parser  
+            ---> 누구에 대한 ? XML문서
+  
+  ---> 방식: event(미팅)기반 분석 
+  
+<XML문법> - XML문서 작성시 고려사항
+- 최소 한개 이상 엘리먼트를 가져야 함.
+- 문서 전체를 감싸는 하나의 엘리먼트가 존재해야 함. ----> RootElement
+- 시작태그가 존재했을때 매칭되는 끝태그가 반드시 있어야 함.(끝태그 생략 불가!!)
+- <?xml version='1.0' encoding="UTF-8" ?>
+   ----> XML선언
+   ----> 전체 생략가능  (선언하는것을 권한)
+   ----> 맨앞에 공백은 X
+   ----> version속성은 반드시 기술 (encoding은 생략가능)
+   ----> version먼저, encoding나중 !!
+- 대소문자 구분!!
+   <age></age>  ---> (O)
+   <age/>       ---> (O)
+   <age></Age>  ---> (X)
+   
+- 속성값에는 반드시 인용부호를 사용!! (작은따옴표, 큰따옴표는 전혀 차이 없음)
+   <table  border='1'  bgcolor="yellow">
+   </table>   
+- 서로 다른 속성은 반드시 공백을 통해 구분해야 함.   
+   <table  border='1'bgcolor="yellow"></table>     ---> (X)
+   <table  border='1'  bgcolor="yellow"></table>   ---> (O)
+
+- 주석(설명문)에 제한된 문자            : '--'
+- content에 제한된 문자    : '<' '&'  ']]>'
+        ---> 제한된 문자를 사용해야  하는 경우 발생
+                ---> 해결1) replace()메소드 사용.
+                ---> 해결2) CDATA섹션을 사용.
+  
+- 속성값에 제한된 문자         : '<' '&'
+
+===================================================================
+void processNode(Node n){
+
+   NodeList list = books.getChildNodes();
+      //list [book,book,book,book]
+   
+   for(int i=0; i<4; i++){
+       processNode1(item(0));//첫번째 book
+       processNode1(item(1));
+       processNode1(item(2));
+       processNode1(item(3));
+   }
+}
+----------------------------------------------
+void processNode1(Node n){
+
+   NodeList list1 = book.getChildNodes();
+      //list1 [title,author,price]
+   
+   for(int i=0; i<3; i++){
+       processNode2(item(0));// title
+       processNode2(item(1));// author
+       processNode2(item(2));// price
+   }
+}
+----------------------------------------------
+void processNode2(Node n){
+
+   NodeList list2 = title.getChildNodes();
+      //list2 ["JavaProgramming"]
+   
+   for(int i=0; i<1; i++){
+       processNode3(item(0));// "JavaProgramming"
+   }
+}
+----------------------------------------------
+void processNode3(Node n){
+
+   NodeList list3 = "JavaProgramming".getChildNodes();
+      //list3 []
+   
+   for(int i=0; i<0; i++){
+   }
+}
+
+===================================================================
+
+  switch(su){
+     case 1: 
+             NodeList list;
+              break;
+     case 2:
+             NodeList list;//중복된 변수 선언 (X)
+              break;
+  }
+  
+  switch(su){
+     case 1: 
+            {
+             NodeList list;
+            }
+              break;
+     case 2:
+             NodeList list;//이름 충돌 방지 (O)
+              break;
+  }
+
+
+   
+   
+   
+     
+
+
+
+
+   
+   
+   
+   
+  
+  
+  
+  
+  
+                                                  
+
+
+
+
+
+                    
+

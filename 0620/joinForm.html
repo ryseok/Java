@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>회원가입</title>
+</head>
+<!-- joinForm.html -->
+<body>
+  <center>
+  <h3>회원가입</h3>
+  
+ <form>
+  <table cellpadding="5" border="1"
+         bgcolor="eeeeee">   
+    <tr> <!-- 첫번째 행 -->
+       <td>I D:</td>
+       <td><input type="text" readonly> <input type="button" value="중복확인"></td>
+      <!--   
+        <input>태그의 속성
+       readonly="readonly"  ==> 읽기전용(쓰기금지)
+       disabled="disabled"  ==> 비활성화
+       -->
+    </tr>
+    <tr>
+       <td>비 번:</td>
+       <td><input type="password"></td>
+    </tr>
+    <tr>
+       <td>비번확인:</td>
+       <td><input type="password"></td>
+    </tr>
+    <tr>
+       <td>이 름:</td>
+       <td><input type="text"></td>
+    </tr>
+    <tr>
+       <td>주민번호:</td>
+       <td><input type="text"  size="6"> 
+          - <input type="password"  size="7"></td>
+    </tr>
+    <tr>
+       <td>전화번호:</td>
+       <td><input type="text" size="4"> 
+           - <input type="text"  size="4"> 
+           - <input type="text"  size="4"></td>
+    </tr>
+    <tr>
+       <td>주 소:</td>
+       <td><input type="text"></td>
+    </tr>
+    <tr>
+       <td>직 업:</td>
+       <td><select>
+            <option>학생</option>
+            <option>공무원</option>
+            <option>언론/출판</option>
+            <option>군인/경찰</option>
+            <option>일반사무직</option>
+            <option>영업직</option>
+            <option>기술/전문직</option>
+            <option>보건/의료</option>
+            <option>자영업</option>
+            <option>주부</option>
+            <option>기타</option>
+         </select>
+       </td>
+    </tr>
+    <tr align="center"> <!-- 아홉번째 행(마지막행) -->
+       <td colspan="2"><input type="submit" value="등록">     
+     <input type="reset" value="취소"></td>
+    </tr>
+  </table>
+ </form>
+ </center>
+</body>
+</html>

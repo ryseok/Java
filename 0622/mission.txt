@@ -1,0 +1,22 @@
+
+
+
+문제) 웹 브라우저에서 실행되는 계산기를 위한 HTML파일을 작성하시오.
+  --> calc_test.html
+  --> su1(<input type=text>) +  su2(<input type=text>) calc(계산버튼)
+                   result(<input type=text>)
+  --> 계산버튼 클릭시 su1과 su2를 더한 값을 result에 출력
+        ---> js/myfun.js파일내에 plus(su1,su2)함수 추가, 호출
+        
+  유효성검사)
+   su1 또는 su2에 값이 입력되지 않았을 경우     
+      ===> '두개의 수를 입력!!' 메시지 창 출력
+   su1 또는 su2에 숫자 아닌 값이 입력되는 경우 
+      ===> '숫자만 입력!!' 메시지 창 출력
+      ===> su1과 su2안의 잘못된 텍스트 clear!!
+      
+      
+      
+      
+      
+      
