@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--
+개념
+스프링 프레임워크는 Bean컨테이너
+Bean : 자바클래스을 관리
+
+※주의사항
+글래스만 등록 : 인터페이스, 추상클래스 안됨
+-->
+<bean class="com.encore.j0821.t3.MessageBeanVi" id="msgBean"></bean>
+</beans>

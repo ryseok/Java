@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!--Bean 관리 : 클래스만 등록 -->
+	<bean class="com.encore.j0821.di.MessageBeanImpl" id="msgBean">
+		<!--BeanCreationException 발생-->
+		<constructor-arg>
+			<value>홍길동</value>
+		</constructor-arg>
+		
+		<!--세터주입(Setter Injection) -->
+		<property name="greeting" value="안녕">
+			<!--
+			위와 같은 방식임
+			<value type="java.lang.String">Hello</value>
+			-->
+		</property>
+	</bean>
+</beans>
