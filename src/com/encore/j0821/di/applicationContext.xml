@@ -1,22 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <!-- 빈Bean 객체생성, 관리(클래스만 등록) -->
+  <!-- 
+  
+  <bean class="com.encore.j0821.di.MessageBeanImpl"></bean>
+  ===> 기본생성자 호출   new MessageBeanImpl();
+  <bean class="com.encore.j0821.di.MessageBeanImpl">
+      <constructor-arg value="홍길동"></constructor-arg>
+  </bean>
+  ===> 오버로딩생성자 호출   new MessageBeanImpl("홍길동");
+  
+  <bean class="com.encore.j0821.di.MessageBeanImpl">
+      <constructor-arg value="홍길동"></constructor-arg>
+      <constructor-arg value="안녕"></constructor-arg>
+  </bean>
+  ===> 오버로딩생성자 호출   new MessageBeanImpl("홍길동","안녕");
+  
+  
+  <bean class="com.encore.j0821.di.MessageBeanImpl">
+      <constructor-arg value="홍길동"></constructor-arg>
+      <constructor-arg><value>안녕</value></constructor-arg>
+      <constructor-arg><bean class="A"></bean></constructor-arg>
+  </bean>
+  ===> 오버로딩생성자 호출   new MessageBeanImpl("홍길동","안녕",new A());
+  
+  <bean class="com.encore.j0821.di.MessageBeanImpl">
+     <property name="name" value="나길동"></property>
+  </bean>
+  ===> 세터메소드 호출  mbi.setName("나길동"); 
+    
+  <bean class="com.encore.j0821.di.MessageBeanImpl">
+     <property name="name" value="나길동"></property>
+     <property name="age" value="13"></property>
+  </bean>
+  ===> 세터메소드 호출  mbi.setName("나길동");
+                    mbi.setAge(Integer.parseInt("13"));
+                    
+  <bean class="com.encore.j0821.di.MessageBeanImpl">
+     <property name="name" value="나길동"></property>
+     <property name="age" value="13"></property>
+     <property name="a"><bean class="A"></bean></property>
+  </bean>
+  ===> 세터메소드 호출  mbi.setName("나길동");
+                   mbi.setAge(Integer.parseInt("13"));
+                   mbi.setA(new A());
+  -->
+                   
+  <bean class="com.encore.j0821.di.MessageBeanImpl" id="msgBean">
+      <!-- 생성자 주입(Constructor Injection) -->
+      <constructor-arg>
+         <value>홍길동</value>
+      </constructor-arg>  
+  
+      <!-- 세터주입(Setter Injection) -->
+      <property name="greeting" value="안녕">
+         <!-- <value type="java.lang.String">Hello</value> -->
+      </property>    
+      
+      <property name="fo" ref="foi">
+            <!-- <bean class="com.encore.j0821.di.FileOutputImpl"></bean> -->
+      </property>
+  </bean>
 
-	<!--Bean 관리 : 클래스만 등록 -->
-	<bean class="com.encore.j0821.di.MessageBeanImpl" id="msgBean">
-		<!--BeanCreationException 발생-->
-		<constructor-arg>
-			<value>홍길동</value>
-		</constructor-arg>
-		
-		<!--세터주입(Setter Injection) -->
-		<property name="greeting" value="안녕">
-			<!--
-			위와 같은 방식임
-			<value type="java.lang.String">Hello</value>
-			-->
-		</property>
-	</bean>
+  <bean class="com.encore.j0821.di.FileOutputImpl" id="foi"></bean>
 </beans>
+
+
+
+
